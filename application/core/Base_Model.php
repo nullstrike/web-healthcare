@@ -1,13 +1,6 @@
 <?php
-
-/**
- * Created by PhpStorm.
- * User: n3far1ous
- * Date: 7/6/17
- * Time: 2:21 PM
- */
 //Base Model for reusable crud operation
-class Base_model extends CI_Model
+class Base_Model extends CI_Model
 {
     public function __construct()
     {
@@ -30,13 +23,13 @@ class Base_model extends CI_Model
     protected function get_fullrow($table)
     {
         $rows = $this->db->get($table);
-        return $rows->result();
+        return $rows->result_array();
     }
 
     protected function get_specific_rows($table, $key)
     {
         $rows = $this->db->get_where($table, $key);
-        return $rows->result();
+        return $rows->result_array();
     }
 
     protected function get_join_rows($columns, $table, $join, $joinkey)
@@ -45,8 +38,13 @@ class Base_model extends CI_Model
             ->from($table)
             ->join($join, $joinkey);
         $rows = $this->db->get();
-        return $rows->result();
+        return $rows->result_array();
 
+    }
+
+    protected function count_rows($table){
+        $rows = $this->db->count_all($table);
+        return $rows;
     }
 
 }

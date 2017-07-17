@@ -1,12 +1,11 @@
 <?php
-include "Base_model.php";
 /**
  * Created by PhpStorm.
  * User: n3far1ous
  * Date: 7/6/17
  * Time: 3:20 PM
  */
-class Patient_model extends Base_model
+class Patient_model extends Base_Model
 {
 
     public function __construct()
@@ -17,11 +16,11 @@ class Patient_model extends Base_model
         $this->add($table,$data);
         return true;
     }
-    public function update_patient($key,$data){
-        $this->update('patient_id',$key,$data,'patient');
+    public function update_patient($data){
+        $this->update('patient_id',$data,'patient');
         return true;
     }
     public function view_patient(){
-        $this->retrieve('')
+        return parent::get_fullrow('patient');
     }
 }

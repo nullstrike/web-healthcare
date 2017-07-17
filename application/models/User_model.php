@@ -1,55 +1,38 @@
 <?php
-include "Base_model.php";
 
-/**
- * Created by SublimeText.
- * User: n3far1ous
- * Date: 7/5/17
- * Time: 1:25 PM
- */
-class User_model extends Base_model
+class User_model extends Base_Model
 {
+    public $user_id;
+    public $table = "user";
+    public $flag;
+    public $role;
+    public $result;
+
     public function __construct()
     {
         parent:: __construct();
-        $this->user_add();
+        $this->user_default();
     }
 
-    public function user_add()
+    public function user_default()
     {
-        if ($rows = $this->count_row() < 2) {
-            $data = array(
+        if ($this->count_rows($this->table) === 0) {
+            $data =
                 array(
-                    "user_username" => "doctor",
+                    "user_username" => "admin",
                     "user_userpass" => "default",
                     "user_type" => "admin"
-                ),
-                array(
-                    "user_username" => "staff",
-                    "user_userpass" => "default",
-                    "user_type" => "normal"
-                ),
-            );
+                );
+            $this->add($this->table, $data);
 
-            for ($i = 0; $i < 2; $i++) {
-                $this->add('user', $data[$i]);
-            }
             return true;
         }
-        return;
     }
 
-    public function count_row()
+    public function user_update($key, $data)
     {
-        $result = $this->db->count_all('user');
-        return $result;
-    }
-
-    public function update_user($key, $data)
-    {
-        $this->update($key, $data, 'user');
-
-        return $this->db->affected_rows();
+        $this->update(array("user_id" => $key), $data, $this->table);
+        return true;
     }
 
     public function view()
@@ -57,27 +40,39 @@ class User_model extends Base_model
         return parent::get_fullrow("user");
     }
 
-    public function auths($key)
-    {
-        return parent::get_specific_rows("user", $key);
-    }
-
     public function join_rows()
     {
         $columns = "user.user_firstname,user_log.log_date";
         return parent::get_join_rows($columns, "user", 'user_log', 'user.user_id = user_log.user_id');
     }
-
-    public function auth($username, $password)
-    {
-        $rows = parent::get_specific_rows('user', array("user_username" => $username));
-        foreach ($rows as $result) {
-            $hashed = $result->user_userpass;
-        }
-        if (password_verify($password, $hashed)) {
+    public function verify_pass($password,$hashed){
+        if(password_verify($password,$hashed)){
             return true;
-        } else {
-            return false;
+        }
+        return false;
+   }
+    public function login($username, $password){
+
+        if($rows = parent::get_specific_rows($this->table,array("user_username" => $username))) {
+            foreach ($rows as $row) {
+                $hashed = $row['user_userpass'];
+            }
+            if ($verify_pass = $this->verify_pass($password, $hashed)) {
+                return $rows;
+            } else {
+                $rows = parent::get_specific_rows($this->table, array("user_username" => $username, "user_userpass" => $password));
+                if (count($rows)) {
+                    return $rows;
+                }
+            }
         }
     }
+
+    public function user_add($data){
+        if(parent::add($this->table,$data)){
+            return true;
+        }
+        return false;
+    }
+
 }

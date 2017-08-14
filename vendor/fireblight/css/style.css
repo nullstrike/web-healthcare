@@ -1,0 +1,124 @@
+
+header,
+main,
+footer {
+    padding-left: 240px;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+@media only screen and (max-width: 992px) {
+    header,
+    main,
+    footer {
+        padding-left: 0;
+    }
+}
+#slide-out {
+    width:240px;
+}
+
+#slide-out  a{
+    color: black;
+}
+
+#dropdown{
+    color:#5C7158;
+}
+#nav-menu a {
+    color:#393835;
+}
+
+#nav-left-fixed{
+    height: 180px;
+}
+#content-wrapper{
+    background-color:;
+}
+.divider{
+    background-color: #393835 !important;
+}
+#brand-logo{
+    padding-left:10px;
+    color:white;
+}
+#img-logo{
+    margin-top:5%;
+    height:100px;
+    width: 100px;
+}
+#footer{
+    height: 50px;
+    background-color: #F2DB8F;
+    color:#5C7158;
+}
+
+nav {
+    height: 70px !important;
+    line-height: 70px !important;
+}
+#attribution{
+    padding-top:200px;
+    text-align: center;
+    padding-left: 20px;
+    font-weight: bold;
+    padding-right:30px;
+}
+.modal {
+  padding:0 !important;
+  width: 80% !important ; 
+  max-height: 80% !important ; 
+}
+.fc button:focus{
+    background: #e6e6e6 !important;
+}
+
+#appointmentModal {
+    padding:0 !important;
+    width: 30% !important;
+    max-height: 100% !important;
+}
+
+#appointmentForm{
+  padding-top: 0.2em;
+}
+
+.picker__date-display{
+ display:none;
+}
+
+#appointmentDate{
+    font-size: 1.1rem;
+}
+#appointmentDate::placeholder{
+   font-size: 1.1rem;
+}
+
+#patient_name{
+    font-size: 1.5rem;
+}
+.btn-small {
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 0.5rem !important;
+}
+
+#consultDialog {
+     padding:0 !important;
+     width: 40% !important ; 
+     max-height: 80% !important ; 
+}
+.modal-title{
+    font-size:2em;
+    padding:0;
+}
+#header{
+    padding:1em;
+}

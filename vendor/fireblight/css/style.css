@@ -26,6 +26,9 @@ main {
 }
 
 #slide-out  a{
+    color: white;
+}
+#slide-out  a .active{
     color: black;
 }
 
@@ -40,7 +43,7 @@ main {
     height: 180px;
 }
 #content-wrapper{
-    background-color:;
+    background-color: #eeeeee;
 }
 .divider{
     background-color: #393835 !important;
@@ -51,8 +54,9 @@ main {
 }
 #img-logo{
     margin-top:5%;
-    height:100px;
-    width: 100px;
+    height:auto;
+    padding:0.2rem 0.5rem;
+    width: 240px;
 }
 #footer{
     height: 50px;
@@ -80,10 +84,14 @@ nav {
     background: #e6e6e6 !important;
 }
 
-#appointmentModal {
+#appointmentModal, #appointmentDetail {
     padding:0 !important;
     width: 30% !important;
     max-height: 100% !important;
+}
+
+#appointmentDetail h3{
+    font-size: 1.5rem;
 }
 
 #appointmentForm{
@@ -121,4 +129,33 @@ nav {
 }
 #header{
     padding:1em;
+}
+#patient_header_view{
+    margin-bottom: 0;   
+}
+#patient_header_divider{
+    width: 600px;
+}
+#patient_info{
+    padding-top:10px;
+}
+#patient_health_info{
+    margin-top:-30px;
+}
+#patient_health_info label{
+    font-size: 1rem;
+    color: #957E7E;
+}
+#consultForm textarea{
+    border:1px double #000;
+}
+#consultForm textarea:focus {
+    border-bottom: 5px solid #1880FF;
+    -webkit-box-shadow: 0 5px 0 0 #1880FF;
+    -moz-box-shadow: 0 5px 0 0 #1880FF;
+    box-shadow: 0 5px 0 0 #1880FF;
+  }
+#consultForm textarea:focus + label {
+    padding:0;
+    color:black;
 }

@@ -8,7 +8,7 @@
           <a class="search-toggle waves-effect btn-flat nopadding"><i class="material-icons">search</i></a>
         </div>
       </div>
-      <table id="datatable">
+      <table id="patientList">
         <thead>
           <tr>
             <th>Patient ID</th>
@@ -24,9 +24,12 @@
   </div>
 </div>
   <div id="patientModal" class="modal">
+    <div class="modal-content blue-grey darken-4 white-text">
+        <h4 class="modal-title"></h4>
+    </div>
     <div class="modal-content">
     <form autocomplete="off" id="patientForm">
-    <h4 class="modal-title"></h4>
+   
     <input type="hidden" name="patient_id">
      <div class="row">
         <div class="input-field col s4">
@@ -36,7 +39,7 @@
         </div> 
          <div class="input-field col s4">
                 <label for="middlename">Middle Name</label>
-                <input type="text" name="middlename" required class="validate">
+                <input type="text" name="middlename"  class="validate">
                 <span></span>
         </div>  
          <div class="input-field col s4">
@@ -56,7 +59,6 @@
         </div>
        
         <div class="col s5 select-field"  >
-       
                <label>Birthdate</label>
                 <input type="text" name="birthdate" id="patientDate" class="datepicker" style="padding:0;margin-top:-7px;" required>          
                    
@@ -71,12 +73,12 @@
     <div class="row">
         <div class="input-field col s3">
                 <label for="firstname">Height (cm)</label>
-                <input type="text" name="height" maxlength="6" required class="validate">
+                <input type="text" name="height" maxlength="5" required class="validate">
                 <span></span>
         </div> 
          <div class="input-field col s3">
                 <label for="middlename">Weight (kg)</label>
-                <input type="text" name="weight" maxlength="6" required class="validate">
+                <input type="text" name="weight" maxlength="5" required class="validate">
                 <span></span>
         </div>  
          <div class="input-field col s6">
@@ -113,6 +115,7 @@
   </div>
   </form>
 </div>
+
 <div class="modal" role="dialog" id="consultDialog">
     <div class="modal-content teal white-text" id="header">
         <span class="modal-title ">Consultation Form</span>

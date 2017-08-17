@@ -1,8 +1,8 @@
-<ul id="slide-out" class="side-nav fixed z-depth-4 red lighten-1" >
+<ul id="slide-out" class="side-nav fixed z-depth-4 blue accent-3" >
     <li class="center no-padding">
         <div id="nav-left-fixed">
             <div class="row">
-                <img alt="aguilar clinic logo here" id="img-logo" src="" class="circle responsive-img" />
+                <img alt="aguilar clinic logo here" id="img-logo" src="<?php echo base_url('vendor/fireblight/images/Aguilar Clinic.png');?>" class=" responsive-img" />
             </div>
         </div>
     </li>
@@ -62,7 +62,7 @@
             <a href="#" id="brand-logo" class="brand-logo">Healthcare Management System</a>
             <ul class="right hide-on-med-and-down" id="nav-menu">
                 <li>
-                    <a class='dropdown-button white-text' href='#' data-activates="dropdown" data-beloworigin="true"><i class=' material-icons right'>arrow_drop_down</i>Dympna Aguilar</a>
+                    <a class='dropdown-button white-text' href='#' data-activates="dropdown" data-beloworigin="true"><i class=' material-icons right'>arrow_drop_down</i><?php echo $this->session->userdata('userName');?></a>
                 </li>
             </ul>
 
@@ -72,7 +72,7 @@
 
     <ul id='dropdown' class='dropdown-content'>
         <li><a href="#!"><i class="material-icons">timelapse</i>User Log</a></li>
-        <li><a href="#!"><i class="material-icons">exit_to_app</i>Logout</a></li>
+        <li><a href="<?php echo base_url('user/user_logout/');?>"><i class="material-icons">exit_to_app</i>Logout</a></li>
 
     </ul>
 </header>

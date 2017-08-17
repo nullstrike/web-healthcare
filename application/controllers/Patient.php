@@ -105,7 +105,7 @@ class Patient extends CI_Controller {
    public function getPatient()
    {
       
-    $id = $this->input->get('patient_id');
+    $id = $this->input->post('patient_id');
     $query = $this->patient_model->patientList(array('patient_id' => $id));
       foreach($query as $row) {
           $result = array();
@@ -134,11 +134,8 @@ class Patient extends CI_Controller {
            $result[] = $row->patient_fname;
            $result[] = $row->patient_mname;
            $result[] = $row->patient_lname;
-          /* $result[] = '<button class="btn-flat transparent waves-light waves-effect" data-id="'.$row->patient_id .'" id="fetchPatient" style="padding:0 1em;"><i class="material-icons blue red-text md-36 left">edit</i></button>&nbsp;<a  class="btn-flat transparent waves-light waves-effect" style="padding:0" href="' . base_url('dashboard/patient/' . $row->patient_id) . '"> <i class="material-icons md-36 blue-text right">more</i></a><a class="btn-flat transparent waves-effect waves-red action"><i class="material-icons">assignment_ind
-</i>Consult</a>';*/
-          $result[] = '<button id="fetchPatient" class="btn-flat btn-small waves-effect waves-light"><i class="material-icons blue-text md-36">edit</i></button>'. '<button class="btn-flat btn-small"><i class="material-icons red-text md-36">more</i></button>'.
-          '<button id="consultPatient" class="btn-flat btn-small"><i class="material-icons orange-text md-36">assignment
-</i></button>';
+           $result[] = '<button id="fetchPatient" class="btn-flat btn-small waves-effect waves-light"><i class="material-icons blue-text md-36">edit</i></button>'
+                       . '<button id="consultPatient" class="btn-flat btn-small"><i class="material-icons orange-text md-36">assignment</i></button>';
          
            $data[] = $result;
        }

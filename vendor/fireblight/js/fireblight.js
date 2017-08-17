@@ -5,22 +5,6 @@ var name_key = [];
 
 
 
-$('#datatable').on('click', '#consultPatient',function(){
-   id = $(this).parent().closest('tr').find('td:first').text();
-   var name = '';
-   $.ajax({
-            url: site_url('patient/getPatient'),
-            data: {patient_id:id},
-            dataType: 'json',
-            type: 'get',
-            success: function(response){
-                name=response;
-            }
-    }); 
-  return false;
-});
-
-
 $(document).ready(function(){
   
     //initialize materialize components
@@ -28,6 +12,7 @@ $(document).ready(function(){
     $('select').material_select();
     $('.modal').modal();
     $('#patientDate').pickadate({
+        max: new Date(),
         container: 'body',
         format: 'yyyy/mm/dd',
         selectMonths: true, 
@@ -78,22 +63,28 @@ $(document).ready(function(){
             url:site_url('appointment/fetchEvents')
         },
         select: function (start, end, allDay) {
-              
+            var events = $('#calendar').fullCalendar('clientEvents', function(event){
+                return (moment(event.start).format('YYYY-MM-DD') >= start);
+            });
+           
         },
 
         eventClick: function (event) {
-           
+            var start = moment(event.start).format('MMMM DD, YYYY');
+            $('#appointmentDetail #patient_name').html(event.title);
+            $('#appointmentDetail #patient_schedule').html('Scheduled on ' + start);
+            $('#appointmentDetail').modal('open');
         },
     }); 
   
     //initialize materialize design DataTables
-    $('#datatable').dataTable({
+    $('#patientList').dataTable({
         ajax: {
                type:'post',
                url: site_url('patient/patientList')
         },
         columnDefs: [
-              {"orderable": false, "width": "14%", "targets":4},
+              {"orderable": false, "width": "10%", "targets":4},
               {"width" : "8%", "targets": 0}
         ],
         pageLength: 10,
@@ -196,6 +187,36 @@ $(document).ready(function(){
                .next().removeClass().html('');
     });
 
+    //Display the patient's information on the patient info
+    //page using localStorage and clears it afterwards
+    if (document.location.pathname === '/healthcare/dashboard/patient_info'){
+        var fname, mname, lname;
+        $.each(localStorage, function(key, val){
+            if (key === 'patient_fname'){
+                fname = val;
+            }
+            if (key === 'patient_mname'){
+                if ($.trim(val) !== '' ){
+                    mname = ' ' + val +', ' ;
+                }
+                else{
+                    mname = ', ';
+                }
+            }
+            if (key === 'patient_lname'){
+                lname = val ;
+            }
+            $('#' + key).not('#patient_name').append(val);
+            $('#patient_name').html(fname + mname + lname);
+        });
+        window.localStorage.clear();
+    }
+    //Set the consultation date
+    $date = moment().format("MMMM DD, YYYY");
+    $('#date').html($date);
+    //-----End of Helpers-----//
+
+
     //-----Functionalities-----//
 
     //Start of User Section//
@@ -229,9 +250,175 @@ $(document).ready(function(){
     
     //Start of Patient Section//
 
+    //Patient Variables
+    //store the patient id 
+        var patient_id,
+    //store the patient form element
+        patientForm = $('#patientForm'),
+    //store the old height
+        height = $('#height').val(), 
+    //store the old weight    
+        weight = $('#weight').val(); 
 
-    //Add new patient
+
+    //Set the action type of the button 
+    //to call the add new patient function
+    //and open the patient form modal
+    $('#addPatient').on('click', function(){
+        action_type = "add";
+        $('.modal-title').html('Add patient');
+        $('#patient_action').html('Add patient');
+        form_modal('#patientModal','#patientForm','');
+    });
+
+    //function to call for adding new patient
+    function addPatient()
+    {
+        $.ajax({
+            url: site_url('patient/insertPatient'),
+            data: patientForm.serialize(),
+            type: 'post',
+            dataType: 'json',
+            success: function(response){
+                if (! response.success) {
+                    if (response.errors) {
+                        $.each(response.errors, function(key, val) {
+                            $('input[name="' + key + '"]').removeClass().addClass('validate invalid')
+                                                          .next().html(val).addClass('red-text');
+                        });
+                    }
+                } else {
+                    Materialize.toast(response.message, 2000, 'green');
+                    $('#patientModal').modal('close');
+                    $('#patientList').DataTable().ajax.reload();
+                }
+            }
+        });
+    }
     
+    //function to fetch patient's information
+    //from the database based on patient id
+    function retrievePatientInfo(patient_id)
+    {
+        $.ajax({
+            url: site_url('patient/getPatient'),
+            data: {patient_id:patient_id},
+            type: 'post',
+            dataType: 'json',
+            success: function(response){
+                $('[name=patient_id]').val(response.patient_id);
+                $('[name=firstname]').val(response.patient_fname);
+                $('[name=middlename]').val(response.patient_mname);
+                $('[name=lastname]').val(response.patient_lname);
+                $('[name=gender]').val(response.patient_gender).prop('selected', true);
+                $('[name=birthdate]').val(response.patient_bdate);
+                $('[name=age]').val(response.patient_age);
+                $('[name=height]').val(response.patient_height);
+                $('[name=weight]').val(response.patient_weight);
+                $('[name=bloodtype]').val(response.patient_bloodtype).prop('selected',true); 
+                $('[name=address]').val(response.patient_address);
+                $('[name=contact]').val(response.patient_contact);  
+                $('select').material_select();
+            }
+         });
+    }
+
+    //Set the action type of the button to call the update 
+    //patient function and retrieve patient info from database
+    //and open the patient form with the info retrieved
+    $('#patientList').on('click', '#fetchPatient', function(event){
+        event.preventDefault();
+        action_type = "update";
+        patient_id = $(this).parent().closest('tr').find('td:first').text();
+        $('.modal-title').html('Update patient');
+        $('#patient_action').html('Update patient');
+        $('#patientForm').find('input,select').each(function() {
+                $(this).val(' ').prev().addClass('active').next().next().addClass('active');
+        });
+        retrievePatientInfo(patient_id);
+        form_modal('#patientModal', '#patientForm', 'name[patient_id]');
+    });
+    
+    //function to call for updating patient information
+    function updatePatient()
+    {
+        $.ajax({
+            url: site_url('patient/updatePatient'),
+            data: patientForm.serialize(),
+            type: 'post',
+            dataType: 'json',
+            success: function(response){
+                if (! response.success) {
+                    if (response.errors) {
+                        $.each(response.errors, function(key, val){
+                            $('input[name=' + key + ']').removeClass().addClass('validate invalid')
+                            .next().html(val).addClass('red-text');
+                        });
+                    }
+                } else {
+                    Materialize.toast(response.message, 2000, 'green');
+                    $('#patientModal').modal('close');
+                    $('#patientList').DataTable().ajax.reload();
+                }
+            }
+        });
+    }
+
+    //Autocompute age based on birthdate field change
+    $('#patientForm').on('change','input[name=birthdate]',function(){
+         var date = $(this).val();
+         var age = get_age(date);
+         $("input[name='age']").val(age);
+    });
+    
+    //Submit the form and the call the function based
+    //on what the current action type value is
+    $('#patientForm').on('submit', function(event){
+        event.preventDefault();
+        if (action_type === 'add') {
+            addPatient();
+        } else {
+            updatePatient();
+        }
+    });
+
+    //Fetches specific patient based on current rows first cell
+    $('#patientList').on('click', '#consultPatient',function(){
+        patient_id = $(this).parent().closest('tr').find('td:first').text();
+        $.ajax({
+                 url: site_url('patient/getPatient'),
+                 data: {patient_id:patient_id},
+                 dataType: 'json',
+                 type: 'post',
+                 success: function(response){
+                    $.each(response, function(key, val){
+                         localStorage.setItem(key, val);
+                    });
+                   window.location.href = site_url('dashboard/patient_info');   
+                 }
+         }); 
+     });
+     
+    
+    //add consultation upon submitting the consultForm element
+    $('#consultForm').on('submit', function(event){
+        event.preventDefault();
+        var patient_id = $('#patient_id').text();
+        var unformat_date = $('#date').text();
+        var id = parseInt(patient_id.match(/\d+/)[0],10);
+        var date = moment(unformat_date).format('YYYY-MM-DD');
+        $.ajax({
+            url: site_url('consultation/insertConsultation'),
+            data: $(this).serialize() + '&patient_id=' + id + '&consultation_date=' + date,
+            type: 'post',
+            dataType: 'json',
+            success: function(response){
+                console.log(response);
+            }
+        });
+        
+    });
+
     //Render events on the calendar based on name and date
     //Sends the form input to the controller
     $('#appointmentForm').on('submit', function(event){
@@ -252,102 +439,17 @@ $(document).ready(function(){
                 console.log(response);
             }
         });
-
     });
       
 });
-  
-/*--------------------------------------------------------------------------------------------
-USER SECTION
----------------------------------------------------------------------------------------------*/
-
-//Adding user
 
 
 
 
-//patient section variables
-var id,fname,mname,lname,age,gender,birthdate,bloodtype,height,weight,address,contact;
-//patient_table variables
-var patient_id,height = $('#height').val(),weight = $('#weight').val();
 
-/*--------------------------------------------------------------------------------------------
-PATIENT SECTION
----------------------------------------------------------------------------------------------*/
 
-$('#addPatient').on('click', function(){
-    action_type = "add";
-    $('.modal-title').html('Add patient');
-    $('#patient_action').html('Add patient');
-    on_modal_close();
-});
 
-function addPatient()
-{
-    var patientForm = $('#patientForm').serialize();
-    $.ajax({
-        url: site_url('patient/insertPatient'),
-        data: patientForm,
-        type: 'post',
-        dataType: 'json',
-       success: function(response){
-              if (response.success === false) {
-                    if (response.errors) {
-                        $.each(response.errors, function(key, val) {
-                             $('input[name=' + key + ']').removeClass().addClass('validate invalid').next().html(val).addClass('red-text');
-                        });
-                    }
-                    Materialize.toast(response.message, 2000, 'red');
-               }
-               else {
-
-                    Materialize.toast(response.message, 2000, 'green');
-                    setTimeout(function() {
-                       window.location.reload();
-                    }, 2000);
-               }
-            }
-    });
-}
-
-function updatePatient()
-{
-     var patientForm = $('#patientForm').serialize();
-    $.ajax({
-        url: site_url('patient/updatePatient'),
-        data: $('#patientForm').serialize(),
-        type: 'post',
-        dataType: 'json',
-       success: function(response){
-              if (response.success === false) {
-                    if (response.errors) {
-                        $.each(response.errors, function(key, val) {
-                             $('input[name=' + key + ']').removeClass().addClass('validate invalid').next().html(val).addClass('red-text');
-                        });
-                    }
-                    Materialize.toast(response.message, 2000, 'red');
-               }
-               else {
-
-                    Materialize.toast(response.message, 2000, 'green');
-                    setTimeout(function() {
-                       window.location.reload();
-                    }, 2000);
-               }
-            }   
-    });
-}
-
-$('#patientForm').on('submit', function(event){
-     event.preventDefault();
-    if(action_type === "add"){
-       addPatient();
-    }else{
-       updatePatient();
-    }
-});
-
-$('#consult').on('click', function(){
+/* $('#consult').on('click', function(){
     var patient_id = $('[name=patient_id]').val();
      var diagnosis = $('[name=diagnosis]').val();
       var prescription = $('[name=prescription]').val();
@@ -359,74 +461,13 @@ $('#consult').on('click', function(){
           window.location.reload();
         }
       });
-});
+}); */
 
-$('#datatable').on('click', '#fetchPatient', function(event){
-    event.preventDefault();
-    action_type = "update";
-    $('.modal-title').html('Update patient');
-    $('#patient_action').html('Update patient');
-    $('#patientForm ').find('input,select').each(function(){
-              $(this).val(' ').prev().addClass('active').next().next().addClass('active');
-           });
-    id = $(this).parent().closest('tr').find('td:first').text();
-
-    $.ajax({
-            url: site_url('patient/getPatient'),
-            data: {patient_id:id},
-            type: 'post',
-            dataType: 'json',
-            success: function(response){
-                $('[name=patient_id]').val(response.patient_id);
-                $('[name=firstname]').val(response.patient_fname);
-                $('[name=middlename]').val(response.patient_mname);
-                $('[name=lastname]').val(response.patient_lname);
-                $('[name=gender]').val(response.patient_gender).prop('selected', true);
-                $('[name=birthdate]').val(response.patient_bdate);
-                $('[name=age]').val(response.patient_age);
-                $('[name=height]').val(response.patient_height);
-                $('[name=weight]').val(response.patient_weight);
-                $('[name=bloodtype]').val(response.patient_bloodtype).prop('selected',true); 
-                $('[name=address]').val(response.patient_address);
-                $('[name=contact]').val(response.patient_contact);
-                $('select').material_select();
-                on_modal_close();    
-        }
-    });
-
-});
 
  
-//Autocompute age based on birthdate field change
-$('#patientForm').on('change',"input[name='birthdate']",function(){
-        $date = $(this).val();
-        $age = get_age($date);
-        $("input[name='age']").val($age);
-});
 
-//Add patient via Ajax
-function patient_add(){
-    $.ajax({
-        url: site_url('patient/patient_add'),
-        data: $('#patient_form').serialize(),
-        type: 'post',
-        dataType: 'json',
-       success: function(response){
-        if(response.status === true){
-            $('#patient_modal').modal('hide');
-            dialog(' fa fa-check-circle-o','green',response.message,true);
-            setTimeout(function(){window.location.href = response.page;},3000);
-        }else{
-                if(response.status === false){
-                $.each(response.errors,function(key,val){
-                    $('input[name="' + key + '"]').next().html(val).addClass('has-error');
-                    $('select[name="' + key + '"]').next().html(val).addClass('has-error');
-                });
-            }
-            }
-        }
-    });
-}
+
+
 
 //Patient asynchronus update function
 function patient_edit(){
@@ -457,7 +498,7 @@ function patient_edit(){
 
 //Patient asynchronous add function
 //for variable values e.g. height and weight
-function patient_old_data(){
+/* function patient_old_data(){
      var extra_data = "&id=" + $('input[name="id"]').val() +
                      "&old_weight=" + weight + "&old_height=" + height; 
     $.ajax({
@@ -468,10 +509,10 @@ function patient_old_data(){
         success:function(data){
         }
     });
-}
+} */
     
 //Patient action validation
-$('#patient_form').on('click','#patient_action',function(){
+/* $('#patient_form').on('click','#patient_action',function(){
      if(action_type == "add"){
         patient_add();
     }else{
@@ -487,26 +528,6 @@ $('#patient_form').on('click','#patient_action',function(){
        
     }
 });
-
-//Modal for patient add
-function patient_add_modal(){
-    action_type = "add";
-    $('.modal-title').html('Add patient');
-    $('#patient_action').html('Add patient');
-    $('#patient_modal').modal('show');
-
-}
-
-//Modal for patient edit
-function patient_update_modal(){
-    action_type = "update";
-    $('.modal-title').html('Update patient');
-    $('#patient_action').html('Update patient');
-    fetch_patient_input();
-    select_gender();
-   /* $('select[name="bloodtype"]').val("AB-");*/
-    $('#patient_modal').modal('show');
-}
 
 
 
@@ -531,30 +552,6 @@ function old_data(){
         }
     });
 }
+ */
 
 
-
-
-
- $('select[name=appointment_time]').on('change',function(){
-     $(this).next().empty();
-     $(this).parent().removeClass();
- })
-
-$('input[name=appointment_date]').on('change',function(){
-   $(this).next().empty();
-   $(this).parent().removeClass();
-});
-
-$('input[name=patient_id]').on('change',function(){
-   $(this).next().empty();
-   $(this).parent().removeClass();
-});
-
-
-$('#appointmentModal').on('hidden.bs.modal',function(){
-    $('#patient_form')[0].reset();
-    $('#patient_id').next().empty().parent().removeClass();
-    $('#dates').next().empty().parent().removeClass();
-    $('#times').next().empty().parent().removeClass();
-});

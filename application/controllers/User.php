@@ -89,6 +89,16 @@ class User extends CI_Controller
     }
 
     /*
+    *use: log outs the user
+    *destroying its session data
+    */
+    public function user_logout()
+    {
+        $this->session->sess_destroy();
+        redirect('/', 'refresh');
+    }
+
+    /*
      * use: update user data give
      * the current password is default
      * destroys the session and encode

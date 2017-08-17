@@ -30,4 +30,12 @@
     </div>
     </form>
   </div>
+  <div id="appointmentDetail" class="modal">
+    <div class="modal-content white-text  blue-grey darken-4">Patient Appointment Detail</div>
+    <div class="modal-content">
+    <h3 id="patient_name"></h3>
+    <h3 id="patient_schedule"></h3>
+    </div>
+  </div>
+
 

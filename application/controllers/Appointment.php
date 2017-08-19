@@ -55,6 +55,7 @@ class Appointment extends CI_Controller
             foreach($query as $rows){
                 $event = array();
                 $date = new DateTime($rows['appointment_date']);
+                $event['patient_id'] = $rows['patient_id'];
                 $event['title'] = 'Appointment for '.$rows['patientName'];
                 $event['start'] = $date->format('Y-m-d');
                 $events[] = $event;

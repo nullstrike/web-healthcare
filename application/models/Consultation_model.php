@@ -28,5 +28,25 @@ class Consultation_model extends CI_Model
             return false;
         }
     }
+    public function getConsultation($key)
+    {
+        $this->db->where('patient_id', $key);
+        $this->db->order_by('consultation_date', 'desc');
+        $query = $this->db->get($this->_table);
+        if ($query) {
+            return $query->result_array();
+        }
+        return;
+    }
+    public function getConsultationbyDate($patient_id, $start, $end)
+    {
+        if (! empty($start) && ! empty($end)) {
+         //   $this->db->where('sell_date BETWEEN "'. date('Y-m-d', strtotime($start_date)). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
+           $this->db->where('patient_id', $patient_id);
+           $this->db->where('consultation_date BETWEEN "'. $start . '" and "' . $end . '"');
+            $query = $this->db->get('consultation');
+            return $query->result_array();
+        }
+    }
    
 }

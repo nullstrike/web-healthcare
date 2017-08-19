@@ -11,6 +11,15 @@ $(document).ready(function(){
     $('.collapsible').collapsible();
     $('select').material_select();
     $('.modal').modal();
+    $('#date_from,#date_to').pickadate({
+        max: new Date(),
+        container: 'html',
+        format: 'mmmm dd, yyyy',
+        formatSubmit: 'yyyy/mm/dd',
+        closeOnSelect: true,
+        selectMonths: true,
+        selectYears: 20
+    });
     $('#patientDate').pickadate({
         max: new Date(),
         container: 'body',
@@ -50,7 +59,8 @@ $(document).ready(function(){
            appointmentButton:{
                text: 'Add appointment',
                click: function(){
-                    $('#appointmentModal').modal('open');
+                    form_modal('#appointmentModal', '#appointmentForm', '');
+                    $('#appoint').prop('disabled', true);
                },
            }
         },
@@ -63,10 +73,25 @@ $(document).ready(function(){
             url:site_url('appointment/fetchEvents')
         },
         select: function (start, end, allDay) {
-            var events = $('#calendar').fullCalendar('clientEvents', function(event){
-                return (moment(event.start).format('YYYY-MM-DD') >= start);
-            });
-           
+
+          var date = moment(start).format('YYYY-MM-DD');
+          var event = $('#calendar').fullCalendar('clientEvents', function(events){
+           return (moment(events.start).format('YYYY-MM-DD') == date);
+          });
+          for(var i= 0; i< event.length; i++){
+             $('#list_appoint').append('<li class="collection-item">' +'Patient ID: ' + event[i].patient_id+ '  '
+                                + event[i].title.substr(16, event[i].title.indexOf(',')-1)  + '<span class="badge blue white-text">' + (i + 1) +  '</span></li>' );
+         }
+        $('#appoint_title').html('Appointments on ' + moment(start).format('MMMM DD, YYYY'));
+        if (event.length > 0){
+            $('#appointmentFullDetail').modal({
+                complete: function(){
+                    $('#list_appoint > li:not(:first-child)').remove();
+                }
+            })
+            $('#appointmentFullDetail').modal('open');
+        }
+       
         },
 
         eventClick: function (event) {
@@ -76,7 +101,7 @@ $(document).ready(function(){
             $('#appointmentDetail').modal('open');
         },
     }); 
-  
+ 
     //initialize materialize design DataTables
     $('#patientList').dataTable({
         ajax: {
@@ -96,9 +121,84 @@ $(document).ready(function(){
          },
         bAutoWidth: false
     });
-
-    //-----helpers-----//
+ 
+      var consultTable =  $('#consultLog').DataTable({
+               
+          ajax:  {
+              url:site_url('consultation/getlogbyID'),
+              type: 'post',
+              data: function(d){
+                $.extend({}, d);
+                d.patient_id = localStorage.getItem('patient_id');
+                var search_key = $('#consultLog').data('searchDate');
+                if (search_key){
+                    $.extend(d, search_key);
+                }
+              }
+          },
+         columnDefs: [
+              {"orderable": false, "width": "36%", "targets":4},
+              {"orderable": false, "width": "36%", "targets":3},
+              {"width": "12%", "targets":2},
+              {"orderable": false, "width": "8%", "targets":1},
+              {"width" : "8%", "targets": 0}
+        ],
+        order:{
+            3: 'desc'
+        },
+        oLanguage: {
+            sStripClasses: "",
+            sSearch: "",
+            sSearchPlaceholder: "",
+            sInfo: "_START_ -_END_ of _TOTAL_",
+       },
+        pageLength:10,
+        bAutoWidth: false
+    }); 
+    //Search consultation by Date//
+    /* $('#date_to').on('change', function(){
+        if ($('#date_to').val() !== '' || $('#date_from').val() !== '')
+            {
+                var searchkey = {patient_id: $('#patient_id').text(), start_date: $('#date_from').val(), end_date: $('#date_to').val()};
+                $('#consultLog').data('searchDate',searchkey);
+                consultTable.ajax.url(site_url('consultation/getlogbydate')).load();
+            }
+            else {
+                
+                consultTable.ajax.url(site_url('consultation/getLogbyID')).load();
+            }
     
+    }); */
+    //End of Search consultation section//
+    
+    //-----helpers-----//
+    function getEventsByFilter(filter){        
+        var allevents = new Array();
+        var filterevents = new Array();
+        allevents = getCalendarEvents(null);
+
+        for(var j in allevents){ 
+            if(allevents[j].eventtype === filter)
+            {
+                filterevents.push(allevents[j]);
+            }
+        }           
+
+        return filterevents;
+    } 
+    function getCalendarEvents(filter){
+        
+                var events = new Array();      
+                    if(filter == null)
+                    {
+                        events = $('#calendar').fullCalendar('clientEvents');
+                    }
+                    else
+                    {
+                        events = getEventsByFilter(filter);                 
+                    }           
+                return events;                 
+            }
     //function for auto-determined age based on given date
     function get_age($date)
     {
@@ -128,14 +228,12 @@ $(document).ready(function(){
             });
         },
     });
-    
- 
     //prevents appointment without name
-    $('#patient_name').on('change', function(){
+    $('#patient_name, #appointdatepicker').on('change', function(){
 
         //set input element to a variable
-        var input = $(this).val();
-        
+        var input = $('#patient_name').val();
+        var appoint = $('#appointmentDate').val();
         //strip the prefix value from the autocomplete
         //value, trim the leading spaces and set the
         //final value to the element
@@ -144,8 +242,11 @@ $(document).ready(function(){
         //check input value against the autocomplete array source
         //disables if the value is not in the array and enables if
         //there is using setting the buttons disabled property
-        if (name_key.indexOf(input) > -1) {
-          $('#appoint').prop('disabled', false);
+        if (name_key.indexOf(input) > -1 ) {
+            if ($.trim(appoint) !== ''){
+                $('#appoint').prop('disabled', false);
+            }
+
         } else {
           $('#appoint').prop('disabled', true);
         }
@@ -190,7 +291,7 @@ $(document).ready(function(){
     //Display the patient's information on the patient info
     //page using localStorage and clears it afterwards
     if (document.location.pathname === '/healthcare/dashboard/patient_info'){
-        var fname, mname, lname;
+        var fname, mname, lname, id;
         $.each(localStorage, function(key, val){
             if (key === 'patient_fname'){
                 fname = val;
@@ -206,14 +307,19 @@ $(document).ready(function(){
             if (key === 'patient_lname'){
                 lname = val ;
             }
-            $('#' + key).not('#patient_name').append(val);
+            if (key === 'patient_id'){
+                $('#patient_id').text(val);
+            }
+            $('#' + key).not('#patient_name,#patient_id').append(val);
             $('#patient_name').html(fname + mname + lname);
+            
         });
         window.localStorage.clear();
     }
     //Set the consultation date
     $date = moment().format("MMMM DD, YYYY");
     $('#date').html($date);
+
     //-----End of Helpers-----//
 
 
@@ -251,8 +357,10 @@ $(document).ready(function(){
     //Start of Patient Section//
 
     //Patient Variables
-    //store the patient id 
-        var patient_id,
+    //store patient id container
+    //parse the int in the text 
+      /*   var el_patient_id = $('#consult_patient_id').text();
+        var patient_id = parseInt(el_patient_id.match(/\d+/)[0],10); */
     //store the patient form element
         patientForm = $('#patientForm'),
     //store the old height
@@ -296,6 +404,8 @@ $(document).ready(function(){
         });
     }
     
+
+
     //function to fetch patient's information
     //from the database based on patient id
     function retrievePatientInfo(patient_id)
@@ -403,13 +513,13 @@ $(document).ready(function(){
     //add consultation upon submitting the consultForm element
     $('#consultForm').on('submit', function(event){
         event.preventDefault();
-        var patient_id = $('#patient_id').text();
+        var id = $('#patient_id').text();
         var unformat_date = $('#date').text();
-        var id = parseInt(patient_id.match(/\d+/)[0],10);
+        var patient_id = parseInt(id.match(/\d+/)[0],10);
         var date = moment(unformat_date).format('YYYY-MM-DD');
         $.ajax({
             url: site_url('consultation/insertConsultation'),
-            data: $(this).serialize() + '&patient_id=' + id + '&consultation_date=' + date,
+            data: $(this).serialize() + '&patient_id=' + patient_id + '&consultation_date=' + date,
             type: 'post',
             dataType: 'json',
             success: function(response){
@@ -429,20 +539,29 @@ $(document).ready(function(){
             title: 'Appointment for ' + $('#patient_name').val(),
             start: new Date(appointment_date)
         };
-        $('#calendar').fullCalendar('renderEvent', events);
+        
         $.ajax({
             url: site_url('appointment/createEvent'),
             data: {patient_id: patient_id, appointment_date: appointment_date},
             type: 'post',
             dataType: 'json',
             success: function(response) {
-                console.log(response);
+                if (! response.success){
+                    if (response.errors){
+                        console.log(response.errors);
+                    } else {
+                        Materialize.toast(response.message,2000,'red');
+                    }
+                } else {
+                    $('#calendar').fullCalendar('renderEvent', events);
+                    Materialize.toast(response.message, 2000, 'green');
+                    $('#appointmentModal').modal('close');
+                }
             }
         });
     });
       
 });
-
 
 
 

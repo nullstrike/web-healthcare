@@ -7,17 +7,16 @@
         </div>
     </li>
 
-    <a href="<?php echo site_url('dashboard');?>">
-    <li id="dashboard">
+    <a href="<?php echo site_url('dashboard/');?>">
+    <li id="dashboard" class="<?php echo ($this->uri->segment(2) === null)?'active':''?>">
         <div class="collapsible-header waves-effect">
             <i class="material-icons">dashboard</i>
-            <!--<b>Dashboard</b>-->
-            Dashboard
+            <b>Dashboard</b>
         </div>
     </li>
     </a>
     <a href="<?php echo site_url('dashboard/user');?>">
-    <li id="user">
+    <li id="user" class="<?php echo ($this->uri->segment(2) === 'user')?'active':''?>">
         <div class="collapsible-header waves-effect">
             <i class="material-icons">group</i>
             <b>Users</b>
@@ -25,7 +24,7 @@
     </li>
     </a>
     <a href="<?php echo site_url('dashboard/patient');?>">
-    <li id="patient">
+    <li id="patient" class="<?php echo ($this->uri->segment(2) === 'patient')?'active':''?>">
         <div class="collapsible-header waves-effect">
             <i class="material-icons">assignment_ind</i>
             <b>Patient</b>
@@ -33,7 +32,7 @@
     </li>
     </a>
     <a href="<?php echo site_url('dashboard/appointment');?>">
-    <li id="appointment">
+    <li id="appointment"  class="<?php echo ($this->uri->segment(2) === 'appointment')?'active':''?>">
         <div class="collapsible-header waves-effect">
             <i class="material-icons">event_note</i>
             <b>Appointments</b>
@@ -62,7 +61,7 @@
             <a href="#" id="brand-logo" class="brand-logo">Healthcare Management System</a>
             <ul class="right hide-on-med-and-down" id="nav-menu">
                 <li>
-                    <a class='dropdown-button white-text' href='#' data-activates="dropdown" data-beloworigin="true"><i class=' material-icons right'>arrow_drop_down</i><?php echo $this->session->userdata('userName');?></a>
+                    <a class='dropdown-button white-text' href='#' data-activates="dropdown" data-beloworigin="true"><i class=' material-icons right'>arrow_drop_down</i><?php echo $this->session->userdata('name');?></a>
                 </li>
             </ul>
 

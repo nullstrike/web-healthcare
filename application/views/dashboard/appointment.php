@@ -37,5 +37,10 @@
     <h3 id="patient_schedule"></h3>
     </div>
   </div>
-
-
+  <div id="appointmentFullDetail" class="modal">
+    <div class="modal-content ">
+    <ul class="collection with-header" id="list_appoint">
+        <li class="collection-header"><span id="appoint_title"></span></li>
+      </ul>
+    </div>
+  </div>

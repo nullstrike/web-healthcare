@@ -33,7 +33,7 @@
                         <input name="password" type="password" class="validate" required>
                         <span class="red-text"></span>
                     </div>
-                    <h6 style="padding-left: 10px;" ><a tabindex="-1" href="#" class="white-text"><i>Change password</i></a></h6>
+                   <!--  <h6 style="padding-left: 10px;" ><a tabindex="-1" href="#" class="white-text"><i>Change password</i></a></h6> -->
                 </div>  
                 <div class="row" style="margin-bottom: 0px;">
                         <button type="submit" id="login" class="btn green waves-effect waves-light col s12"> Login</button>

@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <div class="row">
 	<div class="col s12 m12">
-  		<div class="card white">
+  		<div class="card z-depth-5 white">
 			<div class="card-content black-text">
 	 			<div class="row" id="patient_header_view">
 					 <div class="left">
@@ -10,7 +10,7 @@
 					 </div>
 					 <div class="right" id="patient_health_info">
 						 <ul>
-					 	 <li><label id="patient_id" >Patient ID: </label></li>
+					 	 <li><label id="" >Patient ID:<span id="patient_id"></span></label></li>
 					     <li> <label id="patient_height">Height: </label><span> cm</span></li>
 						 <li><label id="patient_weight" >Weight: </label><span> kg</span></li>
 						 <li> <label id="patient_bloodtype">BloodType: </label></li>			
@@ -46,66 +46,41 @@
 								<textarea class="materialize-textarea" name="prescription" id="" cols="30" rows="10"></textarea>
 								<label for="prescription">Prescription</label>
 							</div>
-							<button id="foo" class="btn-flat right red waves-effect waves-light white-text">Add Consultation</button>
+							<button class="btn-flat right red waves-effect waves-light white-text">Add Consultation</button>
 						</form>
 					</div>
 			</div>
 	
 	
  		 </div>
-		  <div class="row " style="height:350px; overflow-y:scroll;">
-	<div class="col m12 ">
-		<h1 class="card-title">Consultation Log</h1>
-		<table class="bordered striped highlight">
-				<thead>
-					<tr>
-						<th>Patient ID</th>
-						<th>Consultation Date</th>
-						<th>Prescription</th>
-						<th>Diagnosis</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-						<td>Stupid cdsunts</td>
-						<td>Red Flesh</td>
-					</tr>
-					<tr>
-						<td>Red Splash</td>
-						<td>This sting</td>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-					</tr>
-					<tr>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-					</tr>
-					<tr>
-						<td>Red Splash</td>
-						<td>This sting</td>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-					</tr>
-					<tr>
-						<td>Stupid sdcunts</td>
-						<td>Red Flesh</td>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-					</tr>
-					<tr>
-						<td>Red Splash</td>
-						<td>This sting</td>
-						<td>Stupid csdunts</td>
-						<td>Red Flesh</td>
-					</tr>
-				</tbody>
-			</table>
-	
-</div>
-</div>
+		
 	</div>
+</div>
+
+
+<div class="row">
+	<div class="col s12 m12">
+  		<div class="card material-table white z-depth-5">
+			<div class="table-header">
+        <span class="table-title">Patient Consultation Log</span>
+		<!-- <div class="actions">
+		<label for="date_from" style="padding-right:5px">From:</label>
+		<input type="text" id="date_from" class="date">
+		<label for="date_from">To:</label>
+		<input type="text" id="date_to" class="date">
+		</div> -->
+     	 </div>
+					<table class="bordered striped highlight" id="consultLog">
+							<thead>
+								<tr>
+									<th>Consultation ID</th>
+									<th>Patient ID</th>
+									<th>Consultation Date</th>
+									<th>Prescription</th>
+									<th>Diagnosis</th>
+								</tr>
+							</thead>
+					</table>
+	<div>
+</div>
 </div>

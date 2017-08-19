@@ -25,13 +25,13 @@ main {
     width:240px;
 }
 
-#slide-out  a{
-    color: white;
-}
-#slide-out  a .active{
+#slide-out  li{
     color: black;
 }
 
+#slide-out .active{
+    color: #FAFAFA ;
+}
 #dropdown{
     color:#5C7158;
 }
@@ -84,7 +84,7 @@ nav {
     background: #e6e6e6 !important;
 }
 
-#appointmentModal, #appointmentDetail {
+#appointmentModal, #appointmentDetail, #appointmentFullDetail {
     padding:0 !important;
     width: 30% !important;
     max-height: 100% !important;
@@ -158,4 +158,15 @@ nav {
 #consultForm textarea:focus + label {
     padding:0;
     color:black;
+}
+.date{
+    width:140px !important;
+}
+#appoint_title{
+    font-size: 1.5rem;
+}
+ #appointmentFullDetail {
+    padding:0 !important;
+    width: 35% !important;
+    max-height: 100% !important;
 }

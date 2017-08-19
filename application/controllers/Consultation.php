@@ -35,15 +35,66 @@ class Consultation extends CI_Controller
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
-    public function viewConsultation()
+    public function getlogbyID()
     {
+        $patient_id = $this->input->post('patient_id');
+        $result = array();
+        $query = $this->consultation_model->getConsultation($patient_id);
+ 
+            foreach ($query as $rows) {
+                $row = array();
+                $row[] = $rows['consultation_id'];
+                $row[] = $rows['patient_id'];
+                $row[] = $rows['consultation_date'];
+                $row[] = $rows['prescription'];
+                $row[] = $rows['diagnosis'];
+                $result[] = $row;
+            }
 
+        $this->output->set_content_type('application/json')->set_output(json_encode(array("data" =>$result)));
     }
-    public function test(){
-        $data = array('patient_id'=> 1, 'consultation_date' => '2017-09-09', 'prescription' => 'blah', 'diagnosis' => 'blah');
-        $query = $this->consultation_model->test($data);
-        echo $query;
+    public function getlogbyDate()
+    {
+        $start = date('Y-m-d', strtotime($this->input->post('start_date')));
+        $end = date('Y-m-d', strtotime($this->input->post('end_date')));
+        $patient_id = $this->input->post('patient_id');
+            $query = $this->consultation_model->getConsultationbyDate($patient_id, $start, $end);
+            $result = array();
+            foreach ($query as $rows) {
+                $row = array();
+                $row[] = $rows['consultation_id'];
+                $row[] = $rows['patient_id'];
+                $row[] = $rows['consultation_date'];
+                $row[] = $rows['prescription'];
+                $row[] = $rows['diagnosis'];
+                $result[] = $row;
+            }
+        $this->output->set_content_type('application/json')->set_output(json_encode(array("data" =>$result)));
+       /*  $start = $this->input->post('start_date');
+        $end = $this->input->post('end_date');
+        if  */
     }
+    public function getDate()
+    {
+        $start = date('Y-m-d',strtotime('2017-08-15'));
+        $end =  '';
+        if ($start >= $end && $end == '') {
+            $query = $this->consultation_model->getConsultationbyDate($start, $end);
+            echo "<pre>";
+            print_r($query);
+        }
+       /*  if ($end < $start){
+            echo "test";
+        } else {
+            $query = $this->consultation_model->getConsultationbyDate($start, $end);
+            echo "<pre>";
+            print_r($query);
+        } */
+      /*   $query = $this->consultation_model->getConsultationbyDate($start, $end);
+        echo "<pre>";
+        print_r($query); */
+    }
+
 }
 
 

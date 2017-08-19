@@ -63,6 +63,7 @@ class User extends CI_Controller
                 $session = array();
                 foreach ($query as $row) {
                     $session['userName'] = $row->userName;
+                    $session['name'] = $row->userfirstName . ' ' .  $row->userlastName;
                     $session['userID'] = $row->userID;
                     $session['userTitle'] = $row->userTitle;
                 }

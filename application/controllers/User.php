@@ -76,7 +76,19 @@ class User extends CI_Controller
                 }
 
                 $response['success'] = true;
-                $response['message'] = "Logging in...";
+
+
+                $data = array(
+                    'userID' => $session['userID'],
+                    'log_datetime' => date('Y-m-d H:i:s')
+                );
+
+                $query = $this->user_model->checkuserLog($session['userID']);
+                if ($query === 0) {
+                    $this->user_model->createuserLog($data);
+                } else if ($query === 1) {
+                    $this->user_model->updateuserLog($session['userID'], $data['log_datetime']);
+                }
 
             } else {
                 $response['success'] = false;
@@ -110,12 +122,11 @@ class User extends CI_Controller
         $this->form_validation->set_rules('password', 'password', 'trim|required');
         $this->form_validation->set_rules('passconf', 'confirm password', 'required|matches[password]');
         $data = array ("userPassword" => password_hash($this->input->post('password'),PASSWORD_BCRYPT));
-     
-       
+
+
         if ($this->form_validation->run()) {
             $id = $this->input->post('userid');
             $response['success'] = true;
-            $response['message'] = "Successfully updated user password";
             $response['page'] = base_url();
             $this->user_model->userUpdate($id, $data);
             session_destroy();
@@ -165,6 +176,16 @@ class User extends CI_Controller
             return false;
         }
         return true;
+    }
+
+    public function test()
+    {
+        $data = array(
+            'userID' => 30
+        );
+        $query = $this->user_model->userLog($data);
+        print_r($query);
+        echo date('Y-m-d');
     }
 
 }

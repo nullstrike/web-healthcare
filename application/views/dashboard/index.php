@@ -1,44 +1,98 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-    <div class="col-sm-9 col-md-9">
-        <div class="well">
-            <h1 class="page-header">Welcome and <?php echo $this->session->userdata('userID');?></h1>
-        </div>
-    </div>
+<div class="row"> <!--Grid -->
+  <div class="row" id="greet_wrapper"> <!--Greet Wrapper-->
+      <div class="col s12 m12 l12" id="greet_block"> <!--Greet Block -->
+        <div class="left"> <!-- Greet Name section-->
+          <span id="greet_name" >Welcome <?php echo $this->session->userdata('name');?></span>
+        </div> <!--End Greet Name section-->
+        <div class="right"> <!--Greet Desc section-->
+          <span>Check upcoming appointments, patient visits, clinic analytic insights and more.</span>
+        </div> <!--End Greet Desc section-->
+      </div> <!--End Greet Block -->
+  </div> <!--End Greet Wrapper -->
 
-    <div class="row">
-    <div class="col s12">
+  <div class="col s8"> <!--First column -->
       <div class="row">
-        <div class="input-field col s12">
-          <i class="material-icons prefix">textsms</i>
-          <input type="text" id="autocomplete-input" class="autocomplete">
-          <label for="autocomplete-input">Autocomplete</label>
+        <div class="col s4">
+          <div class="card horizontal">
+            <div class="card-image valign-wrapper blue darken-2">
+              <i class="material-icons md-75 white-text">person</i>
+            </div>
+            <div class="card-stacked blue">
+              <div class="card-content white-text">
+                <p for="patient_num" id="label_patient">Total Patients</p>
+                <p class="figures" id="patient_num"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col s4">
+          <div class="card horizontal">
+            <div class="card-image valign-wrapper red darken-2">
+              <i class="material-icons md-75 white-text">local_hospital</i>
+            </div>
+            <div class="card-stacked red lighten-1 ">
+              <div class="card-content white-text">
+                <p for="patient_num" id="label_patient">Visits this Week</p>
+                <p class="figures" id="patient_week-visit"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col s4">
+          <div class="card horizontal">
+            <div class="card-image valign-wrapper green darken-2">
+              <i class="material-icons md-75 white-text">trending_up</i>
+            </div>
+            <div class="card-stacked green ">
+              <div class="card-content white-text">
+                <p for="patient_num" id="label_patient">New Patients</p>
+                <p class="figures" id="new_patient_num">s</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-<button id="foo">TEST</button>
+      <div class="row"> <!--First Nested Column -->
+        <div class="card-panel"> <!-- Chart block -->
+            <canvas id="quarterInfoChart" ></canvas> <!-- Canvas for chart -->
+        </div> <!--End Chart block -->
+      </div> <!--End First Nested Column -->
+      <div class="row">
+            <div class="col s7">
+                <canvas id="commonDiagChart" width="300" height="300"></canvas>
 
-<div id="appointmentModal" class="modal">
-    <div class="modal-content">
-      <h4 class="modal-title">Create appointment</h4>
-      <form autocomplete="off" id="appointmentForm">
-         <input type="hidden" name="user_id" value="<?php echo $this->session->userdata('user_id');?>">
-         <input type="hidden" name="patient_id" disabled="" value="">
-         <div class="row">
-            
-                  <div class="input-field s7">
-                        <input type="text" name="patient_name" id="patient_name" class="autocomplete" required>
-                        <label>Patient Name</label>
-                  </div>
-  
+            </div>
+            <div class="col s5">
+              <div class="card-panel white">
+                <canvas id="typeInfoCharts" width="300" height="300"></canvas>
+              </div>
+
+            </div>
+      </div>
+  </div> <!-- End First column -->
+
+  <div class="col s4"> <!--Second column -->
+    <ul class="collection">
+      <li class="collection-item block-header"><h5>Clinic Visit Type</h5></li>
+      <li>
+        <div class="card-panel card-wrapper">
+            <canvas id="typeInfoChart" width="200" height="150"></canvas>
         </div>
-         <div id="appointdatepicker">
-              <label>Appointment Date</label>
-              <input style="margin-bottom: 0;" name="appointmentDate" type="text" class="datepicker" id="appointmentDate" placeholder="Select appointment date" required>
-         </div>
-    </div>
-    <div class="modal-footer">
-        <button id='appoint' class="btn-flat blue-grey darken-4 waves-effect waves-red white-text" disabled>Create Appointment</button>
-    </div>
-    </form>
-  </div>
+
+</li>
+    </ul>
+
+
+
+
+    <ul class="collection" id="appointList">
+      <li class="collection-item block-header">
+        <h5>Upcoming Appointments</h5>
+      </li>
+
+    </ul>
+
+  </div> <!--End Second column-->
+</div> <!--End Grid -->

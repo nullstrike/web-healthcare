@@ -1,18 +1,15 @@
-<?php 
-
-/**
-* 
-*/
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 class Appointment extends CI_Controller
 {
-	
+
 	function __construct()
 	{
 		parent::__construct();
 		$this->load->model('appointment_model');
 		$this->load->library('form_validation');
     }
-    
+
     public function getPatientName()
     {
             $rows = $this->appointment_model->fetchPatientName();
@@ -56,15 +53,26 @@ class Appointment extends CI_Controller
                 $event = array();
                 $date = new DateTime($rows['appointment_date']);
                 $event['patient_id'] = $rows['patient_id'];
-                $event['title'] = 'Appointment for '.$rows['patientName'];
+                $event['title'] = $rows['patientName'];
                 $event['start'] = $date->format('Y-m-d');
                 $events[] = $event;
             }
-            $this->output->set_content_type('application/json')->set_output(json_encode($events));
+       return $this->output->set_content_type('application/json')->set_output(json_encode($events));
     }
     public function send_sms($date, $id)
     {
-        
+
     }
-   
+
+		public function upcomingEvents()
+		{
+				$query = $this->appointment_model->upcomingEvents();
+				$events = array();
+				foreach($query as $rows){
+						$event['name'] = $rows->patientName;
+						$event['date'] = $rows->appointment_date;
+						$events[] = $event;
+				}
+				return $this->output->set_content_type('application/json')->set_output(json_encode($events));
+		}
 }

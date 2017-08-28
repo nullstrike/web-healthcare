@@ -1,5 +1,5 @@
 <?php
-
+defined('BASEPATH') OR exit('No direct script access allowed');
 class Consultation extends CI_Controller 
 {
     public function __construct()
@@ -43,8 +43,8 @@ class Consultation extends CI_Controller
  
             foreach ($query as $rows) {
                 $row = array();
-                $row[] = $rows['consultation_id'];
-                $row[] = $rows['patient_id'];
+             /*    $row[] = $rows['consultation_id'];
+                $row[] = $rows['patient_id']; */
                 $row[] = $rows['consultation_date'];
                 $row[] = $rows['prescription'];
                 $row[] = $rows['diagnosis'];
@@ -62,39 +62,15 @@ class Consultation extends CI_Controller
             $result = array();
             foreach ($query as $rows) {
                 $row = array();
-                $row[] = $rows['consultation_id'];
-                $row[] = $rows['patient_id'];
+   /*              $row[] = $rows['consultation_id'];
+                $row[] = $rows['patient_id']; */
                 $row[] = $rows['consultation_date'];
                 $row[] = $rows['prescription'];
                 $row[] = $rows['diagnosis'];
                 $result[] = $row;
             }
         $this->output->set_content_type('application/json')->set_output(json_encode(array("data" =>$result)));
-       /*  $start = $this->input->post('start_date');
-        $end = $this->input->post('end_date');
-        if  */
     }
-    public function getDate()
-    {
-        $start = date('Y-m-d',strtotime('2017-08-15'));
-        $end =  '';
-        if ($start >= $end && $end == '') {
-            $query = $this->consultation_model->getConsultationbyDate($start, $end);
-            echo "<pre>";
-            print_r($query);
-        }
-       /*  if ($end < $start){
-            echo "test";
-        } else {
-            $query = $this->consultation_model->getConsultationbyDate($start, $end);
-            echo "<pre>";
-            print_r($query);
-        } */
-      /*   $query = $this->consultation_model->getConsultationbyDate($start, $end);
-        echo "<pre>";
-        print_r($query); */
-    }
-
 }
 
 

@@ -50,7 +50,7 @@ class Patient extends CI_Controller {
    }
 
    public function updatePatient()
-   {    
+   {
         //validation rules
         $this->form_validation->set_rules('firstname', 'first name', 'required|trim|callback__name_check');
         $this->form_validation->set_rules('middlename', 'middle name', 'trim|callback__mid_name');
@@ -79,7 +79,7 @@ class Patient extends CI_Controller {
                "patient_contact" => $this->input->post('contact')
             );
 
-        
+
         if ($this->form_validation->run()) {
               $response['success'] = true;
               $response['message'] = 'Successfully updated patient';
@@ -104,7 +104,7 @@ class Patient extends CI_Controller {
 
    public function getPatient()
    {
-      
+
     $id = $this->input->post('patient_id');
     $query = $this->patient_model->patientList(array('patient_id' => $id));
       foreach($query as $row) {
@@ -122,7 +122,7 @@ class Patient extends CI_Controller {
           $result['patient_address'] = $row->patient_address;
           $result['patient_contact'] = $row->patient_contact;
       }
-    return $this->output->set_content_type('application/json')->set_output(json_encode($result)); 
+    return $this->output->set_content_type('application/json')->set_output(json_encode($result));
    }
    public function patientList()
    {
@@ -136,7 +136,7 @@ class Patient extends CI_Controller {
            $result[] = $row->patient_lname;
            $result[] = '<button id="fetchPatient" class="btn-flat btn-small waves-effect waves-light"><i class="material-icons blue-text md-36">edit</i></button>'
                        . '<button id="consultPatient" class="btn-flat btn-small"><i class="material-icons orange-text md-36">assignment</i></button>';
-         
+
            $data[] = $result;
        }
        return $this->output->set_content_type('application/json')->set_output(json_encode(array("data" => $data)));
@@ -147,8 +147,8 @@ class Patient extends CI_Controller {
       if (!preg_match('/^\d{2,3}\.?\d*$/', $str)) {
         $this->form_validation->set_message('_wh_check','The {field} must only contain numbers and decimal');
         return false;
-      } 
-      return true;  
+      }
+      return true;
   }
   public function _name_check($str)
   {
@@ -178,4 +178,18 @@ class Patient extends CI_Controller {
 
       $this->patient_model->addConsultation($data);
    }
+
+   public function getQuarters()
+   {
+     $query = $this->patient_model->patientStats();
+      if (isset($query)){
+        $result[] = $query->firstQuarter;
+        $result[] = $query->secondQuarter;
+        $result[] = $query->thirdQuarter;
+        $result[] = $query->fourthQuarter;
+      }
+      return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+   }
+
+
 }

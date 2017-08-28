@@ -1,0 +1,47 @@
+body {
+  background-image: url('../images/aguilar-clinic.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-color: hsla(0,0%,100%,0.35);
+  background-blend-mode: overlay;
+}
+#loginBox{
+  padding-top:100px;
+}
+input {
+  font-size:1.2rem !important;
+}
+input[type="text"]:focus,
+input[type="password"]:focus{
+  border-bottom: 1px solid #3f51b5 !important;
+  box-shadow: 0 1px 0 0 #3f51b5 !important;
+},
+
+#header-image{
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  height: 200px;
+  width: 400px;
+}
+#loginWrapper{
+  border-radius:10px;
+  padding:15px;
+  opacity: 0.8;
+}
+#loginAction{
+  padding: 25px 0px;
+}
+#loginBtn{
+    height: 60px;
+    line-height: 60px;
+    padding: 0 0.5rem;
+}
+label{
+    font-size: 1.2rem;
+    color: black;
+}

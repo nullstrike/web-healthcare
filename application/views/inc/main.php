@@ -2,7 +2,7 @@
     <li class="center no-padding">
         <div id="nav-left-fixed">
             <div class="row">
-                <img alt="aguilar clinic logo here" id="img-logo" src="<?php echo base_url('vendor/fireblight/images/Aguilar Clinic.png');?>" class=" responsive-img" />
+                <img alt="aguilar clinic logo here" id="img-logo" src="<?php echo base_url('vendor/fireblight/images/Aguilar-Clinic-logo.png');?>" class=" responsive-img" />
             </div>
         </div>
     </li>
@@ -65,7 +65,7 @@
                 </li>
             </ul>
 
-            <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+            <a href="#" data-activates="slide-out" class="button-collapse"></a>
         </div>
     </nav>
 

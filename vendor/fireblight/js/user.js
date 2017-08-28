@@ -1,3 +1,4 @@
+//user authentication
 $('#loginForm').on('submit', function(event){
 	event.preventDefault();
 	$.ajax({
@@ -15,15 +16,13 @@ $('#loginForm').on('submit', function(event){
 	           	 	Materialize.toast(response.message, 2000, 'red');
 	           }
 	           else {
-
-	           	    Materialize.toast(response.message, 2000, 'green');
-	           	    setTimeout(function() {
 	           	    	window.location.href = response.page;
-	           	    }, 2000);
-	           }
+			   }
 			}
 	  });
 });
+
+//update doctor information
 $('#updateUserForm').on('submit', function(event) {
 	event.preventDefault();
 	$.ajax({
@@ -41,15 +40,13 @@ $('#updateUserForm').on('submit', function(event) {
            	 	Materialize.toast(response.message, 2000, 'red');
            }
            else {
-
-           	    Materialize.toast(response.message, 2000, 'green');
-           	    setTimeout(function() {
            	    	window.location.href = response.page;
-           	    }, 2000);
            }
 		}
 	});
 });
+
+//update user information
 $('#changePassForm').on('submit', function(event){
 	event.preventDefault();
 	$.ajax({
@@ -67,11 +64,7 @@ $('#changePassForm').on('submit', function(event){
            	 	Materialize.toast(response.message, 2000, 'red');
            }
            else {
-
-           	    Materialize.toast(response.message, 2000, 'green');
-           	    setTimeout(function() {
            	    	window.location.href = response.page;
-           	    }, 2000);
            }
        }
     });

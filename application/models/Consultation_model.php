@@ -1,5 +1,5 @@
 <?php
-
+defined('BASEPATH') OR exit('No direct script access allowed');
 class Consultation_model extends CI_Model
 {
     private $_table = 'consultation';
@@ -41,9 +41,8 @@ class Consultation_model extends CI_Model
     public function getConsultationbyDate($patient_id, $start, $end)
     {
         if (! empty($start) && ! empty($end)) {
-         //   $this->db->where('sell_date BETWEEN "'. date('Y-m-d', strtotime($start_date)). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
-           $this->db->where('patient_id', $patient_id);
-           $this->db->where('consultation_date BETWEEN "'. $start . '" and "' . $end . '"');
+            $this->db->where('patient_id', $patient_id);
+            $this->db->where('consultation_date BETWEEN "'. $start . '" and "' . $end . '"');
             $query = $this->db->get('consultation');
             return $query->result_array();
         }

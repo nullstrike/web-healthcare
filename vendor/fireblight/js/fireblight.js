@@ -6,7 +6,7 @@ var name_key = [];
 
 
 $(document).ready(function(){
-  
+
     //initialize materialize components
     $('.collapsible').collapsible();
     $('select').material_select();
@@ -24,27 +24,27 @@ $(document).ready(function(){
         max: new Date(),
         container: 'body',
         format: 'yyyy/mm/dd',
-        selectMonths: true, 
+        selectMonths: true,
         selectYears: 60,
         closeOnSelect: true
     });
     $('#appointmentDate').pickadate({
-        container: 'body',  
+        container: 'body',
         min: new Date(),
         selectMonths: false,
         format: 'You selecte!d: dddd,  mmmm dd, yyyy',
         formatSubmit: 'yyyy/mm/dd',
         hiddenName: true,
-        closeOnSelect: true 
+        closeOnSelect: true
     });
     $(".button-collapse").sideNav({
-        menuWidth: 300, // Default is 300
-      edge: 'left', // Choose the horizontal origin
-      closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
-      draggable: true, // Choose whether you can drag to open on touch screens,
+        menuWidth: 300,
+      edge: 'left',
+      closeOnClick: true,
+      draggable: true,
 
     });
-    
+
     //initialize fullCalendar
     $('#calendar').fullCalendar({
          defaultView: 'month',
@@ -79,8 +79,8 @@ $(document).ready(function(){
            return (moment(events.start).format('YYYY-MM-DD') == date);
           });
           for(var i= 0; i< event.length; i++){
-             $('#list_appoint').append('<li class="collection-item">' +'Patient ID: ' + event[i].patient_id+ '  '
-                                + event[i].title.substr(16, event[i].title.indexOf(',')-1)  + '<span class="badge blue white-text">' + (i + 1) +  '</span></li>' );
+             $('#list_appoint').append('<li class="collection-item">' +'Patient ID: ' + event[i].patient_id+ '   '
+                                + event[i].title + '<span class="badge blue white-text">' + (i + 1) +  '</span></li>' );
          }
         $('#appoint_title').html('Appointments on ' + moment(start).format('MMMM DD, YYYY'));
         if (event.length > 0){
@@ -91,17 +91,50 @@ $(document).ready(function(){
             })
             $('#appointmentFullDetail').modal('open');
         }
-       
+
         },
 
         eventClick: function (event) {
-            var start = moment(event.start).format('MMMM DD, YYYY');
-            $('#appointmentDetail #patient_name').html(event.title);
-            $('#appointmentDetail #patient_schedule').html('Scheduled on ' + start);
-            $('#appointmentDetail').modal('open');
+         var patient_id = event.patient_id;
+         $.ajax({
+             url: site_url('patient/getpatient'),
+             data: {patient_id: patient_id},
+             dataType: 'json',
+             type: 'post',
+             success: function(response){
+                 var name = [];
+
+                $.each(response, function(key, val){
+                    $('#'+key).append(val);
+
+                    switch (key){
+                        case 'patient_fname': name.push(val + ' ');
+                                              break;
+                        case 'patient_mname': name.push(val + ', ');
+                                              break;
+                        case 'patient_lname': name.push(val);
+                                              break;
+                         default: break;
+
+                    }
+
+                });
+                $('#patient_header_view').find('h3').html(name);
+
+             }
+         });
+         $('#appointmentDetail').modal({
+            complete: function(){
+                $('#patient_info').find('label').not('#consultForm label').html('');
+                $('#patient_info').find('#consultForm textarea.materialize-textarea').val('').next().removeClass();
+            }
+    });
+         $('#appointmentDetail').modal('open');
+
         },
-    }); 
- 
+
+    });
+
     //initialize materialize design DataTables
     $('#patientList').dataTable({
         ajax: {
@@ -121,9 +154,9 @@ $(document).ready(function(){
          },
         bAutoWidth: false
     });
- 
+
       var consultTable =  $('#consultLog').DataTable({
-               
+
           ajax:  {
               url:site_url('consultation/getlogbyID'),
               type: 'post',
@@ -137,15 +170,13 @@ $(document).ready(function(){
               }
           },
          columnDefs: [
-              {"orderable": false, "width": "36%", "targets":4},
-              {"orderable": false, "width": "36%", "targets":3},
-              {"width": "12%", "targets":2},
-              {"orderable": false, "width": "8%", "targets":1},
-              {"width" : "8%", "targets": 0}
+              {"orderable": false, "width": "36%", "targets":2},
+              {"orderable": false, "width": "36%", "targets":1},
+              {"width" : "8%", "orderable": true, "targets": 0, }
         ],
-        order:{
-            3: 'desc'
-        },
+            order:[
+                [0, 'desc']
+            ],
         oLanguage: {
             sStripClasses: "",
             sSearch: "",
@@ -154,7 +185,7 @@ $(document).ready(function(){
        },
         pageLength:10,
         bAutoWidth: false
-    }); 
+    });
     //Search consultation by Date//
     /* $('#date_to').on('change', function(){
         if ($('#date_to').val() !== '' || $('#date_from').val() !== '')
@@ -164,41 +195,15 @@ $(document).ready(function(){
                 consultTable.ajax.url(site_url('consultation/getlogbydate')).load();
             }
             else {
-                
+
                 consultTable.ajax.url(site_url('consultation/getLogbyID')).load();
             }
-    
+
     }); */
     //End of Search consultation section//
-    
+
     //-----helpers-----//
-    function getEventsByFilter(filter){        
-        var allevents = new Array();
-        var filterevents = new Array();
-        allevents = getCalendarEvents(null);
 
-        for(var j in allevents){ 
-            if(allevents[j].eventtype === filter)
-            {
-                filterevents.push(allevents[j]);
-            }
-        }           
-
-        return filterevents;
-    } 
-    function getCalendarEvents(filter){
-        
-                var events = new Array();      
-                    if(filter == null)
-                    {
-                        events = $('#calendar').fullCalendar('clientEvents');
-                    }
-                    else
-                    {
-                        events = getEventsByFilter(filter);                 
-                    }           
-                return events;                 
-            }
     //function for auto-determined age based on given date
     function get_age($date)
     {
@@ -218,13 +223,14 @@ $(document).ready(function(){
         type: 'get',
         success: function(response){
             var input = $('#patient_name').val();
-            $.each(response, function(key, val){     
-                name_data[key] = val;  
+            $.each(response, function(key, val){
+                name_data[key] = val;
                 name_key.push(key);
             });
             $('input.autocomplete').autocomplete({
                 data: name_data,
-                limit:5
+                limit:5,
+                minLength:4
             });
         },
     });
@@ -254,7 +260,7 @@ $(document).ready(function(){
 
     //prevents appointment without date
     $('#appointmentDate').on('change', function(){
-        
+
          //set input element to a variable
          var input = $(this);
 
@@ -312,10 +318,10 @@ $(document).ready(function(){
             }
             $('#' + key).not('#patient_name,#patient_id').append(val);
             $('#patient_name').html(fname + mname + lname);
-            
+
         });
-        window.localStorage.clear();
     }
+
     //Set the consultation date
     $date = moment().format("MMMM DD, YYYY");
     $('#date').html($date);
@@ -326,7 +332,7 @@ $(document).ready(function(){
     //-----Functionalities-----//
 
     //Start of User Section//
-    
+
     //Add user function
     $('#registerForm').on('submit', function(event){
         event.preventDefault();
@@ -353,23 +359,23 @@ $(document).ready(function(){
 
     //End of User Section//
 
-    
+
     //Start of Patient Section//
 
     //Patient Variables
     //store patient id container
-    //parse the int in the text 
+    //parse the int in the text
       /*   var el_patient_id = $('#consult_patient_id').text();
         var patient_id = parseInt(el_patient_id.match(/\d+/)[0],10); */
     //store the patient form element
         patientForm = $('#patientForm'),
     //store the old height
-        height = $('#height').val(), 
-    //store the old weight    
-        weight = $('#weight').val(); 
+        height = $('#height').val(),
+    //store the old weight
+        weight = $('#weight').val();
 
 
-    //Set the action type of the button 
+    //Set the action type of the button
     //to call the add new patient function
     //and open the patient form modal
     $('#addPatient').on('click', function(){
@@ -403,7 +409,7 @@ $(document).ready(function(){
             }
         });
     }
-    
+
 
 
     //function to fetch patient's information
@@ -425,15 +431,15 @@ $(document).ready(function(){
                 $('[name=age]').val(response.patient_age);
                 $('[name=height]').val(response.patient_height);
                 $('[name=weight]').val(response.patient_weight);
-                $('[name=bloodtype]').val(response.patient_bloodtype).prop('selected',true); 
+                $('[name=bloodtype]').val(response.patient_bloodtype).prop('selected',true);
                 $('[name=address]').val(response.patient_address);
-                $('[name=contact]').val(response.patient_contact);  
+                $('[name=contact]').val(response.patient_contact);
                 $('select').material_select();
             }
          });
     }
 
-    //Set the action type of the button to call the update 
+    //Set the action type of the button to call the update
     //patient function and retrieve patient info from database
     //and open the patient form with the info retrieved
     $('#patientList').on('click', '#fetchPatient', function(event){
@@ -448,7 +454,7 @@ $(document).ready(function(){
         retrievePatientInfo(patient_id);
         form_modal('#patientModal', '#patientForm', 'name[patient_id]');
     });
-    
+
     //function to call for updating patient information
     function updatePatient()
     {
@@ -480,7 +486,7 @@ $(document).ready(function(){
          var age = get_age(date);
          $("input[name='age']").val(age);
     });
-    
+
     //Submit the form and the call the function based
     //on what the current action type value is
     $('#patientForm').on('submit', function(event){
@@ -504,29 +510,39 @@ $(document).ready(function(){
                     $.each(response, function(key, val){
                          localStorage.setItem(key, val);
                     });
-                   window.location.href = site_url('dashboard/patient_info');   
+                   window.location.href = site_url('dashboard/patient_info');
                  }
-         }); 
+         });
      });
-     
-    
+
+
     //add consultation upon submitting the consultForm element
     $('#consultForm').on('submit', function(event){
         event.preventDefault();
         var id = $('#patient_id').text();
         var unformat_date = $('#date').text();
         var patient_id = parseInt(id.match(/\d+/)[0],10);
-        var date = moment(unformat_date).format('YYYY-MM-DD');
+        var date = moment(new Date(unformat_date)).format('YYYY-MM-DD');
         $.ajax({
             url: site_url('consultation/insertConsultation'),
             data: $(this).serialize() + '&patient_id=' + patient_id + '&consultation_date=' + date,
             type: 'post',
             dataType: 'json',
             success: function(response){
-                console.log(response);
+               if (response.success) {
+                   Materialize.toast(response.message, 2000,'green');
+                   $('#appointmentDetail').modal('close');
+               } else {
+
+                       if (response.errors) {
+                           Materialize.toast(response.errors, 2000, 'red');
+                           $('#appointmentDetail').modal('close');
+                       }
+
+               }
             }
         });
-        
+
     });
 
     //Render events on the calendar based on name and date
@@ -536,10 +552,10 @@ $(document).ready(function(){
         var patient_id = $('[name=patient_name]').attr('data-id');
         var appointment_date = $('[name=appointmentDate').val();
         var events = {
-            title: 'Appointment for ' + $('#patient_name').val(),
+            title: $('#patient_name').val(),
             start: new Date(appointment_date)
         };
-        
+
         $.ajax({
             url: site_url('appointment/createEvent'),
             data: {patient_id: patient_id, appointment_date: appointment_date},
@@ -553,37 +569,190 @@ $(document).ready(function(){
                         Materialize.toast(response.message,2000,'red');
                     }
                 } else {
-                    $('#calendar').fullCalendar('renderEvent', events);
+                    //$('#calendar').fullCalendar('renderEvent', events);
+                    $('#calendar').fullCalendar('refetchEvents');
                     Materialize.toast(response.message, 2000, 'green');
                     $('#appointmentModal').modal('close');
                 }
             }
         });
     });
-      
+    $.ajax({
+      url: site_url('statistics/getPatientNum'),
+      data:{},
+      type: 'get',
+      dataType: 'json',
+      success: function(figures) {
+          $('#patient_num').text(figures);
+      }
+    });
+
+    $.ajax({
+      url: site_url('statistics/getPatientWeeklyStat'),
+      data:{},
+      type: 'get',
+      dataType: 'text',
+      success: function (figures) {
+          $('#patient_week-visit').text(figures);
+      }
+    });
+    //--------Dashboard--------//
+
+    //upcoming appointment block
+    $.ajax({
+        url: site_url('appointment/upcomingEvents'),
+        data:{},
+        type: 'get',
+        dataType: 'json',
+        success: function(resp){
+          for(var i=0, len = resp.length; i<len; i++){
+            $('#appointList li:eq(0)').after('<li class="collection-item">'
+                                        + '<span>' + resp[i].name + '</span>'
+                                        + '<span>' + 'Scheduled on: ' + moment(resp[i].date).format('MMMM DD, YYYY') + '</span>' +
+                                        '</li>');
+          }
+        }
+    });
+
+    //number of patients chart
+    $.ajax({
+        url: site_url('statistics/getPatientQuarterStat'),
+        data: {},
+        type: 'get',
+        dataType: 'json',
+        success: function(datasource) {
+            patientStats(datasource);
+            barGraph();
+            DonutChart();
+        }
+    });
+
 });
 
+    //create upcoming appointment block
 
 
-
-
-
-/* $('#consult').on('click', function(){
-    var patient_id = $('[name=patient_id]').val();
-     var diagnosis = $('[name=diagnosis]').val();
-      var prescription = $('[name=prescription]').val();
-      $.ajax({
-        url: site_url('patient/addConsultation'),
-        data:{patient_id:patient_id, diagnosis: diagnosis, prescription:prescription},
-        type: 'post',
-        success: function(){
-          window.location.reload();
-        }
+    //creating a line chart for patient statistics
+    function patientStats(datasource) {
+          var context = $('#quarterInfoChart');
+          var infochart = new Chart(context, {
+          type: 'line',
+          data: {
+              labels: ["Jan - March", "April - June", "July - Sept", "Oct - Dec"],
+              datasets: [{
+                  label: "Number of Patients Visited",
+                  backgroundColor: '#0d47a1',
+                  borderColor: '#80d8ff',
+                  data: datasource,
+                  fill: false,
+              }]
+          },
+          options: {
+              responsive: true,
+              title:{
+                  display:true,
+                  text:'Clinic Patient Visits'
+              },
+              tooltips: {
+                  mode: 'index',
+                  intersect: false,
+              },
+              hover: {
+                  mode: 'nearest',
+                  intersect: true
+              },
+              legend: {
+                onClick: (e) => e.stopPropagation()
+              },
+              scales: {
+                  xAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: 'Quarterly'
+                      }
+                  }],
+                  yAxes: [{
+               ticks: {
+                   beginAtZero:true
+               }
+           }]
+              }
+          }
       });
-}); */
+    }
+
+    //create bar graph
+    function barGraph() {
+      var ctx = $('#typeInfoChart');
+      var myChart = new Chart(ctx, {
+  type: 'pie',
+  data: {
+      labels: ["Walk-In", "Apppointment"],
+      datasets: [{
+
+          data: [12, 19],
+          backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+
+          ],
+          borderColor: [
+              'rgba(255,99,132,1)',
+              'rgba(54, 162, 235, 1)',
+
+          ],
+          borderWidth: 1
+      }]
+  },
+  options: {
+    tooltips: {
+          callbacks: {
+              label: function(tooltipItem, data) {
+                  var allData = data.datasets[tooltipItem.datasetIndex].data;
+                  var tooltipLabel = data.labels[tooltipItem.index];
+                  var tooltipData = allData[tooltipItem.index];
+                  var total = 0;
+                  for (var i in allData) {
+                      total += allData[i];
+                  }
+                  var tooltipPercentage = Math.round((tooltipData / total) * 100);
+                  return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
+              }
+          }
+      }
+  }
+});
+    }
+    function DonutChart() {
+      var ctx = $('#commonDiagChart');
+      var myDoughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+data: {
+  labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+  datasets: [
+    {
+      label: "Population (millions)",
+      backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+      data: [2478,5267,734,784,433]
+    }
+  ]
+},
+options: {
+  title: {
+    display: true,
+    text: 'Predicted world population (millions) in 2050'
+  },
+  response: true
+}
+      });
+    }
 
 
- 
+
+
+
+
 
 
 
@@ -619,7 +788,7 @@ function patient_edit(){
 //for variable values e.g. height and weight
 /* function patient_old_data(){
      var extra_data = "&id=" + $('input[name="id"]').val() +
-                     "&old_weight=" + weight + "&old_height=" + height; 
+                     "&old_weight=" + weight + "&old_height=" + height;
     $.ajax({
          url: site_url('patient/patient_old_data'),
         data: extra_data,
@@ -629,7 +798,7 @@ function patient_edit(){
         }
     });
 } */
-    
+
 //Patient action validation
 /* $('#patient_form').on('click','#patient_action',function(){
      if(action_type == "add"){
@@ -644,7 +813,7 @@ function patient_edit(){
            patient_edit();
            patient_old_data();
         }
-       
+
     }
 });
 
@@ -672,5 +841,3 @@ function old_data(){
     });
 }
  */
-
-

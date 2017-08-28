@@ -5,6 +5,7 @@ class User_model extends CI_Model
     //table name
     private $_table = 'user';
     private $_primary_key = 'userID';
+    private $_relate_table = 'user_log';
 
     public function __construct()
     {
@@ -103,5 +104,24 @@ class User_model extends CI_Model
         return $rows;
    }
 
+   public function checkuserLog($userID) 
+   {
+        $this->db->where('userID', $userID);
+        $this->db->where("DATE_FORMAT(log_datetime,'%Y-%m-%d')", date('Y-m-d'));
+        $query = $this->db->get($this->_relate_table);
+        return $query->num_rows();
+   }
+   public function createuserLog($logdata)
+   {
+       $this->db->insert($this->_relate_table, $logdata);
+       return;
+   }
+   public function updateuserLog($userID, $logdata)
+   {
+       $this->db->where('userID', $userID);
+       $this->db->where("DATE_FORMAT(log_datetime,'%Y-%m-%d')", date('Y-m-d'));
+       $this->db->update($this->_relate_table, array('log_datetime' => $logdata));
+       return;
+   }
 
 }

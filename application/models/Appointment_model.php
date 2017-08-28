@@ -1,8 +1,5 @@
-<?php 
-
-/**
-* 
-*/
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 class Appointment_model extends CI_Model
 {
 	private $_table = 'appointment';
@@ -27,11 +24,7 @@ class Appointment_model extends CI_Model
 		} else {
 			return false;
 		}
-		/* $query = $this->db->insert($this->_table, $data);
-		if ($query) {
-			return true;
-		} 
-		return false; */
+
 	}
 
 	public function fetchPatientName()
@@ -46,12 +39,22 @@ class Appointment_model extends CI_Model
 		$this->db->select('appointment.*, CONCAT(patient.patient_lname,",",patient.patient_fname) as patientName');
 		$this->db->from($this->_table);
 		$this->db->join($this->_related_table,'appointment.patient_id = patient.patient_id');
+		$this->db->where('appointment_date >=', date('Y-m-d'));
 		$this->db->order_by('appointment.appointment_created','ASC');
 		$query = $this->db->get();
-		if ($query) {
-			return $query->result_array();
-		}
-		return;
+		return $query->result_array();
+	}
+
+	public function upcomingEvents()
+	{
+		$date = date_add(new Datetime(), date_interval_create_from_date_string("2 days"));
+		$this->db->select('appointment.appointment_date, CONCAT(patient.patient_fname, " " ,patient.patient_mname, " ", patient.patient_lname) as patientName');
+		$this->db->from($this->_table);
+		$this->db->join($this->_related_table,'appointment.patient_id = patient.patient_id');
+		$this->db->where('appointment_date BETWEEN "' . date('Y-m-d') . '" and "' . date_format($date, 'Y-m-d') . '"' );
+		$this->db->order_by('appointment.appointment_date','ASC');
+		$query = $this->db->get();
+		return $query->result();
 	}
 }
 

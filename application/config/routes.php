@@ -54,11 +54,11 @@ $route['404_override'] = 'navigation/errorpage';
 $route['translate_uri_dashes'] = FALSE;
 
 //Custom Routes
+$route['dashboard/reports/diagnostic'] = 'navigation/reports';
+$route['user/update'] = 'navigation/update_user';
 $route['dashboard'] = 'navigation/dashboard';
-$route['dashboard/user'] = 'navigation/user';
-$route['user/edit'] = 'navigation/edit';
-$route['dashboard/appointment'] = 'navigation/appointment';
-$route['dashboard/patient'] = 'navigation/patient';
-$route['dashboard/patient/(:num)'] = 'navigation/patient/getPatient/$id';
-$route['dashboard/consultation'] = 'navigation/consultation/';
-$route['dashboard/patient_info'] = 'navigation/patient_info';
+$route['dashboard/user'] = 'navigation/manage_user';
+$route['dashboard/patient'] = 'navigation/manage_patient';
+$route['dashboard/appointment'] = 'navigation/manage_appointment';
+$route['search/patient'] = 'patient/getPatientName';
+$route['dashboard/consultation'] = 'navigation/manage_consultation';

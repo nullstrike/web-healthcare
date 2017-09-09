@@ -2,15 +2,10 @@
 
 class User_model extends CI_Model
 {
-    //table name
-    private $_table = 'user';
-    private $_primary_key = 'userID';
-    private $_relate_table = 'user_log';
 
     public function __construct()
     {
         parent:: __construct();
-        $this->load->database();
         $this->user_default();
     }
 
@@ -19,15 +14,15 @@ class User_model extends CI_Model
      */
     public function user_default()
     {
-        $query = $this->userFetch();
-        if ($query->num_rows() === 0) {
-            $data = array(
-                 'userName'     => 'doctor',
-                 'userPassword' => 'default',
-                 'userTitle'    => 'doctor'
-            );
+        $query = $this->userFetch(array('username' => 'doctor'));
+        $data = array(
+            'username'     => 'doctor',
+            'password'     => 'default',
+            'usertitle'    => 'doctor'
+       );
+        if ($query->num_rows() === 0) { 
             $this->userInsert($data);
-        }
+        } 
     }
 
     /*
@@ -37,11 +32,11 @@ class User_model extends CI_Model
      */
     public function userUpdate($key, $data)
     {
-        $this->db->where(array($this->_primary_key => $key));
-        $query = $this->db->update($this->_table, $data);
+        $this->db->where(array('id' => $key));
+        $query = $this->db->update('user', $data);
         if ($this->db->affected_rows() > 0) {
             return true;
-        } 
+        }
         return false;
     }
 
@@ -65,18 +60,17 @@ class User_model extends CI_Model
      */
     public function authenticate($username, $password)
     {
-        $query = $this->userFetch(array('userName' => $username))->result();
+        $query = $this->userFetch(array('username' => $username))->result();
         if (count ($query)) {
             foreach ($query as $result) {
-                //$hashed = $result['userPassword'];
-                $hashed = $result->userPassword;
+                $hashed = $result->password;
             }
             if ($this->verifyPassword($password, $hashed)) {
                 return $query;
             }
             else
             {
-                $row = $this->userFetch(array('userName' => $username, 'userPassword' => $password));
+                $row = $this->userFetch(array('username' => $username, 'password' => $password));
                 if ($row->num_rows() === 1) {
                     return $row->result();
                 }
@@ -86,7 +80,7 @@ class User_model extends CI_Model
 
    public function userInsert($data)
    {
-       $query = $this->db->insert($this->_table, $data);
+       $query = $this->db->insert('user', $data);
        if ($query) {
           return $this->db->insert_id();
        }
@@ -100,28 +94,32 @@ class User_model extends CI_Model
                 $this->db->where($key);
              }
         }
-        $rows = $this->db->get($this->_table);
-        return $rows;
+      $rows = $this->db->get('user');
+      return $rows;
    }
 
-   public function checkuserLog($userID) 
+   public function resetData()
    {
-        $this->db->where('userID', $userID);
-        $this->db->where("DATE_FORMAT(log_datetime,'%Y-%m-%d')", date('Y-m-d'));
-        $query = $this->db->get($this->_relate_table);
-        return $query->num_rows();
+      
    }
-   public function createuserLog($logdata)
-   {
-       $this->db->insert($this->_relate_table, $logdata);
-       return;
-   }
-   public function updateuserLog($userID, $logdata)
-   {
-       $this->db->where('userID', $userID);
-       $this->db->where("DATE_FORMAT(log_datetime,'%Y-%m-%d')", date('Y-m-d'));
-       $this->db->update($this->_relate_table, array('log_datetime' => $logdata));
-       return;
-   }
+//    public function checkuserLog($userID)
+//    {
+//         $this->db->where('userID', $userID);
+//         $this->db->where("DATE_FORMAT(log_datetime,'%Y-%m-%d')", date('Y-m-d'));
+//         $query = $this->db->get('userlog');
+//         return $query->num_rows();
+//    }
+//    public function createuserLog($logdata)
+//    {
+//        $this->db->insert('userlog', $logdata);
+//        return;
+//    }
+//    public function updateuserLog($userID, $logdata)
+//    {
+//        $this->db->where('userID', $userID);
+//        $this->db->where("DATE_FORMAT(log_datetime,'%Y-%m-%d')", date('Y-m-d'));
+//        $this->db->update('userlog', array('log_datetime' => $logdata));
+//        return;
+//    }
 
 }

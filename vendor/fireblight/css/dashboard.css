@@ -1,0 +1,434 @@
+.error.text{
+  color:#9f3a38;
+  font-size: 0.9em;
+}
+
+.quick.fix{
+  margin: 0 !important;
+}
+
+.text.white {
+  color: #FFFFFF;
+}
+.text.grey {
+  color: #CCCCCC;
+}
+.text.black {
+  color: #1B1C1D;
+}
+.text.yellow {
+  color: #F2C61F;
+}
+.text.teal {
+  color: #00B5AD;
+}
+.text.red {
+  color: #D95C5C;
+}
+.text.purple {
+  color: #564F8A;
+}
+.text.pink {
+  color: #D9499A;
+}
+.text.orange {
+  color: #E07B53;
+}
+.text.green {
+  color: #5BBD72;
+}
+.text.blue {
+  color: #3B83C0;
+}
+
+/* .ui.attached.segment {
+  border: none;
+} */
+
+#content{
+  padding:0 1.2em !important;
+  background: rgba(0,0,0,.03);
+}
+
+
+
+
+
+#header{
+  margin:0;
+  border-radius:0;
+  height:48px;
+}
+
+#typechart-Wrapper{
+  width:43% !important;
+}
+#brand{
+  padding:0 1.4em;
+  font-weight:bold;
+  font-size:1.62em
+}
+#sidebar-toggle{
+  color:black;
+}
+#welcome-info{
+  padding:2em 1em;
+}
+.calendar-wrap{
+padding-right: 221px;
+padding-bottom:1em;
+padding-left: 0.1em;
+width:1120px !important;
+}
+
+#sidebar a.item{
+  color: white;
+}
+
+#sidebar{
+  background:#263238 ;
+}
+
+.ui.visible.left.sidebar~.fixed, .ui.visible.left.sidebar~.pusher{
+  transform: translate3d(221px, 0, 0);
+  background: #f5f5f5;
+}
+.pushable>.pusher{
+    background: #f5f5f5 !important;
+}
+
+#appointments{
+  padding:2em;
+}
+
+/* .inflex{
+  padding-right:221px !important;
+} */
+.pull-graph{
+  width: calc(85% - 2em);
+}
+.collapse-wrapper{
+  visibility: visible;
+  display: none;
+}
+.collapse-toggle{
+  visibility: visible;
+  display: block;
+}
+
+.ui.secondary.vertical.menu a.item{
+  width: 232px !important;
+  padding: .5em 2em;
+  line-height: 1.5em;
+}
+
+.boxed{
+  border-radius:0 !important;
+  border: 0 !important;
+  padding: 1em !important;
+}
+
+#dashboard-info h5 {
+  margin-bottom: 0.5em;
+}
+
+#user_table_wrapper{
+  padding-bottom: 2em !important;
+}
+
+#user_table_length{
+  width: 150px;
+}
+
+.modal-message{
+  margin:0 !important;
+  padding:0.5em;
+}
+.error-message{
+  display: block;
+  white-space: nowrap;
+}
+.ui.dropdown.appoint.selection{
+  width:25%;
+}
+
+  
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+.ui.segment.body{
+  width:100%;
+  height: 100%;
+  margin:0;
+}
+.wizard > .steps .number{
+  display: none !important;
+}
+
+.step-message{
+
+    margin: 0 !important;
+    background: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    padding: 0 !important;
+
+}
+
+#steps-uid-0-p-1{
+  overflow-y: auto;
+}
+#steps-uid-0-p-1 #step-two-date{
+  padding-left:4em;
+}
+.first-step{
+  padding-left: 13.9em!important;
+  margin-left: 1;
+}
+
+#step-two-date{
+  padding-left:4.5em;
+}
+
+#payee{
+  
+  font-weight: 900;
+  padding-left: 0.5em;
+
+}
+
+
+/* #consultation_table_filter{
+  margin-left: 695px;
+} */
+/*header,
+main,
+footer {
+    padding-left: 240px;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+@media only screen and (max-width: 992px) {
+    header,
+    main,
+    footer {
+        padding-left: 0;
+    }
+}
+#slide-out {
+    width:240px;
+}
+
+#slide-out  li{
+    color: black;
+}
+
+#slide-out .active{
+    color: #FAFAFA ;
+}
+#dropdown{
+    color:#5C7158;
+}
+#nav-menu a {
+    color:#393835;
+}
+
+#nav-left-fixed{
+    height: 180px;
+}
+#content-wrapper{
+    background-color: #eeeeee;
+}
+.divider{
+    background-color: #393835 !important;
+}
+#brand-logo{
+    padding-left:10px;
+    color:white;
+}
+#img-logo{
+    margin-top:5%;
+    height:auto;
+    padding:0.2rem 0.5rem;
+    width: 240px;
+}
+#footer{
+    height: 50px;
+    background-color: #F2DB8F;
+    color:#5C7158;
+}
+
+nav {
+    height: 70px !important;
+    line-height: 70px !important;
+}
+#attribution{
+    padding-top:200px;
+    text-align: center;
+    padding-left: 20px;
+    font-weight: bold;
+    padding-right:30px;
+}
+.modal {
+  padding:0 !important;
+  width: 80% !important ;
+  max-height: 80% !important ;
+}
+.fc button:focus{
+    background: #e6e6e6 !important;
+}
+
+#appointmentModal, #appointmentFullDetail {
+    padding:0 !important;
+    width: 30% !important;
+    max-height: 100% !important;
+}
+
+#appointmentDetail h3{
+    font-size: 1.5rem;
+}
+
+#appointmentForm{
+  padding-top: 0.2em;
+}
+
+.picker__date-display{
+ display:none;
+}
+
+#appointmentDate{
+    font-size: 1.1rem;
+}
+#appointmentDate::placeholder{
+   font-size: 1.1rem;
+}
+
+#patient_name{
+    font-size: 1.5rem;
+}
+.btn-small {
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 0.5rem !important;
+}
+
+#consultDialog {
+     padding:0 !important;
+     width: 40% !important ;
+     max-height: 80% !important ;
+}
+.modal-title{
+    font-size:2em;
+    padding:0;
+}
+#header{
+    padding:1em;
+}
+#patient_header_view{
+    margin-bottom: 0;
+}
+#patient_header_divider{
+    width: 400px;
+}
+#patient_info{
+    padding-top:20px;
+}
+#patient_health_info{
+    margin-top:-30px;
+}
+#patient_health_info label{
+    font-size: 1rem;
+    color: #957E7E;
+}
+#consultForm textarea{
+    border:1px double #000;
+}
+#consultForm textarea:focus {
+    border-bottom: 5px solid #1880FF;
+    -webkit-box-shadow: 0 5px 0 0 #1880FF;
+    -moz-box-shadow: 0 5px 0 0 #1880FF;
+    box-shadow: 0 5px 0 0 #1880FF;
+  }
+#consultForm textarea:focus + label {
+    padding:0;
+    color:black;
+}
+.date{
+    width:140px !important;
+}
+#appoint_title{
+    font-size: 1.5rem;
+}
+ #appointmentDetail {
+    padding:0 !important;
+    margin-top: -25px;
+    width: 70% !important;
+    max-height: 100% !important;
+    overflow-y: hidden;
+}
+
+.header{
+    font-size:1.2em;
+    font-weight: 800;
+}
+
+#infoChart{
+  width:400px;
+  height: 100px;
+  min-height: 100%;
+}
+
+#greet_name{
+  font-size:1.2rem;
+}
+
+#greet_block{
+  padding-top:12px;
+}
+
+#greet_wrapper{
+  margin-bottom: 0px;
+}
+
+#label_patient{
+  position: absolute;
+  top: 5px;
+  left:8px;
+  font-size: 1.2rem;
+}
+
+.figures{
+  font-size:2rem;
+  padding-top: 10px;
+}
+
+.card-wrapper{
+  margin: auto !important;
+}
+
+.block-header{
+  background-color:rgba(0,0,0,.03) !important;
+}
+ .collection-item  span {
+  display: block;
+  font-size: 1.2rem;
+}*/

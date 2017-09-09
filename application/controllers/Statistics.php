@@ -9,13 +9,24 @@ class Statistics extends CI_Controller{
     $this->load->model(array('patient_model','appointment_model'));
   }
 
-  public function getPatientNum()
+  public function getStats()
   {
-     $query = $this->patient_model->patientNum();
-     return $this->output->set_content_type('application/json')->set_output(json_encode($query));
+      $stats = array(
+        "totalpatient"       => $this->getPatientNum(),
+        "patientquarterstat" => $this->getPatientQuarterStat(),
+        "patientweekstat"    => $this->getPatientWeeklyStat(),
+
+      );
+      return $this->output->set_content_type('application/json')->set_output(json_encode($stats));
   }
 
-  public function getPatientQuarterStat()
+  private function getPatientNum()
+  {
+     $query = $this->patient_model->patientNum();
+     return $query;
+  }
+
+  private function getPatientQuarterStat()
   {
     $query = $this->patient_model->patientQuarterStat();
      if (isset($query)){
@@ -24,24 +35,26 @@ class Statistics extends CI_Controller{
        $result[] = $query->thirdQuarter;
        $result[] = $query->fourthQuarter;
      }
-     return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+     return $query;
   }
 
-  public function getPatientWeeklyStat()
+  private function getPatientWeeklyStat()
   {
     $query = $this->patient_model->patientWeeklyStat();
 
     if (isset($query)) {
-        echo $query->WeekVisits;
+        return $query->WeekVisits;
     }
+    return;
   }
 
-  public function getPatientNewStat()
+  private function getPatientNewStat()
   {
     $query = $this->patient_model->patientNewStat();
     if (isset($query)) {
-        echo $query->NewPatients;
+        return $query->NewPatients;
     }
+    return;
   }
 
 }

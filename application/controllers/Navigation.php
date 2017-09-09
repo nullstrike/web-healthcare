@@ -6,69 +6,90 @@
 class Navigation extends CI_Controller
 {
 
-	protected $data;
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('user_model'); 
+		$this->load->model('user_model');
 		$this->load->model('patient_model');
-		$this->load->helper('url');
 	}
 
-	/*
-	*Load the index page
-	*/
+	//load login page
 	public function index()
 	{
-		$this->load->view('index');
+		$this->load_page('login', 'index');
 	}
-    
 
-	/*
-	*Load the update user page
-	*/
-    public function edit(){
-        $this->load->view('dashboard/update_user');
-    }
+	//load update user page
+	public function update_user()
+	{
+		$defaultFlag = $this->session->userdata('default');
+		if ($this->is_logged_in() && $defaultFlag === 1){
+			$this->load_page('login', 'dashboard/update_user');
+		} else if  ($this->is_logged_in() && $defaultFlag === 0) {
+			redirect ( base_url('dashboard/'));
+		} else {
+			redirect ( base_url());
+		}
+   		
+	}
 
-	/*
-	*Load the admin dashboard page
-	*/
+	//load dashboard page
 	public function dashboard()
 	{
-		$this->page('dashboard/index');
-	} 
-
-	/*
-	*Load the manage user page
-	*/
-	public function user()
-	{
-        $this->page('dashboard/manage-user');
+		if ($this->is_logged_in()){
+			$this->load_page('dashboard', 'dashboard/index');
+		}
+		
+		
 	}
 
+	//Load manage user page
+	public function manage_user()
+	{
+		
+		if ($this->is_logged_in()){
+			$this->load_page('dashboard', 'dashboard/manage_user');
+		}
+		
+	}
+
+	//Load manage patient page
+	public function manage_patient()
+	{
+		if ($this->is_logged_in()){
+			$this->load_page('dashboard', 'dashboard/manage_patient');
+		}
+		
+	}
 	/*
 	*Load the user edit page
 	*/
-	public function appointment()
+	public function manage_appointment()
 	{
-        $this->page('dashboard/appointment');
+		if ($this->is_logged_in()){
+			$this->load_page('dashboard', 'dashboard/manage_appointment');
+		}
+        
 	}
 
-	/*
-	*Load the patient page
-	*/
-	public function patient()
-	{
-		$this->page('dashboard/manage-patient');
+	public function reports(){
+
+		if ($this->is_logged_in()){
+			$this->load_page('dashboard','reports/prints');
+		}
+		
 	}
 
+
 	/*
-	*Load the patient info page
+	*Load the consultation page
 	*/
-	public function patient_info()
+	public function manage_consultation()
 	{
-		$this->page('dashboard/patient_info');
+		if ($this->is_logged_in()){
+			$this->load_page('dashboard', 'dashboard/manage_consultation');
+		}
+		
 	}
 
 	/*
@@ -81,25 +102,25 @@ class Navigation extends CI_Controller
     }
 
     /*
-    *Load the consultation page
-    */
-    public function consultation()
-    {
-    	$this->page('dashboard/consultation');
-    }
-    /*
     *Use for loadiing main content on the dashboard
     */
-    private function page($content = 'dashboard/index', $page = 'inc/main')
-    {
-        $year = getdate();
-        $this->data['pagetitle'] = 'Healthcare Management System of Aguilar Clinic';
-        $this->data['copy'] = 'Aguilar Clinic &copy; ' . $year['year'];
-        $this->data['content']  = $this->load->view($content,'',TRUE);
+	private function load_page($type, $content){
+		$data['pagetitle'] = 'Aguilar Clinic | Healthcare Management System';
+		$data['type'] = $type;
+		$data['content'] = $this->load->view($content, null, true);
+		$this->load->view('inc/template', $data);
+	}
 
-        $this->load->view('inc/header', $this->data);
-        $this->load->view($page, $this->data);
-        $this->load->view('inc/footer', $this->data);
-
-    }
+	/*
+	*Check if user logged in
+	*/
+	private function is_logged_in()
+	{
+		$user = $this->session->userdata('userID');
+		if ($user){
+			return true;
+		} else {
+			redirect( base_url() );
+		}
+	}
 }

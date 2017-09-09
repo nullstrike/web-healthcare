@@ -3,7 +3,7 @@
 class Patient_model extends CI_Model
 {
     private $_table = 'patient';
-    private $_primary_key = 'patient_id';
+    private $_primary_key = 'id';
     public function __construct()
     {
         parent::__construct();
@@ -47,6 +47,17 @@ class Patient_model extends CI_Model
         }
         return false;
     }
+
+    public function fetchPatientName($name)
+	{
+		$this->db->select('id, concat(firstname," ", middlename, " ", lastname) as name');
+		$this->db->having('name like',"%" . $name . "%");
+		$this->db->limit(5);
+		$this->db->from('patient');
+		$query = $this->db->get();
+		return $query->result();
+    }
+    
     public function patientQuarterStat()
     {
        $this->db->select('sum(case when QUARTER(consultation_date) = 1 then 1 else 0 end) as firstQuarter,

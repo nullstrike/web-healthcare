@@ -1,170 +1,65 @@
-//client side validation
+$(function() {
+    
+    //initialize user data table
+    var user_table =  $('#user_table').DataTable({
+        ajax: site_url('user/getUsers'),
+        language:{
+            search: '_INPUT_',
+            searchPlaceholder: 'Search records...'
+          },
+        columnDefs: [
+            {orderable: false, targets: -1}
+        ]
+    });
 
-//login form validation
-$('#loginForm').form({
-			fields: {
-				username : 'empty',
-				password : 'empty'
-			},
-			on : 'blur',
-			onSuccess: function(e){
-				e.preventDefault();
+    //append custom button inside the user data table
+    $('#user_table_filter').prepend('<button class="ui small icon button blue" id="add_user"><i class="add user medium icon"></i> Add user</button>');
+    $('#user_table_filter').addClass('icon').append('<i class="search icon"><i>');
 
-				//user authentication
-				$.ajax({
-					url:  site_url('user/authenticate'),
-					data: $(this).serialize(),
-					type: 'post',
-					dataType: 'json',
-					success: function(response){
-								 if (! response.success){
-													if (response.message !== undefined){
-														$('.ui.message.transition').addClass('negative').removeClass('hidden').find('h3').html(response.message);
-														$('input').closest('.field').addClass('error');
-													}
-									} else {
-										window.location.href = response.page;
-									}
-						}
-					});
-			}
-
-});
-
-//update form validation
-$('#updateForm').form({
-		fields: {
-				firstName    : {
-					optional: true,
-					rules: [
-									{
-										type  : 'empty',
-										prompt: 'Please enter your first name'
-									}
-							]
-				},
-				lastName    : {
-					optional: true,
-					rules: [
-									{
-										type  : 'empty',
-										prompt: 'Please enter your last name'
-									}
-							]
-				},
-				contactNum    : {
-					optional: true,
-					rules: [
-									{
-										type   : 'exactLength[11]',
-										prompt : 'Contact number must be in 11-digit character'
-									},
-									{
-										type   : 'number',
-										prompt : 'Please enter a number',
-									},
-									{
-										type   : 'empty',
-										prompt : 'Please enter your contact number'
-									}
-							]
-				},
-				userPass    : {
-					rules: [
-									{
-										type   : 'empty',
-										prompt : 'Please enter your desired password'
-									},
-									{
-										type   : 'minLength[6]',
-										prompt : 'Password must be greater than five characters'
-									}
-							]
-				},
-				userpassConf : {
-					rules: [
-							   {
-									type  : 'match[userPass]',
-									prompt: 'The password do not match'
-							   }
-						   ]
-				}
-		},
-		on : 'blur',
-		inline : true
-});
-
-$(function(){
-
-		//persistent field error
-		$('#loginForm').find('input').on('change', function(){
-			var input = $(this);
-			if ($.trim(input.val()) === ''){
-					input.next().html('<div class="ui corner label">' +
-														'<i class="asterisk icon"></i>' +
-														'</div>');
-					}
-	  });
+    //toggle user modal
+    $(document).on('click', '#add_user', function(){
+        $('.ui.mini.modal').modal({
+            onHidden: function(){
+                $('#user_form')[0].reset();
+                $('#user_modal input').next().html('').parent().removeClass('error');   
+            },
+            autofocus: false
+            }).modal('show');
+    });
 
 
-		//update function
-		function doUpdate(action, data = $('#updateForm').serialize()) {
-			$.ajax({
-					url			 : site_url('user/' + action),
-					data     : data,
-					type     : 'post',
-					dataType : 'json',
-					success: function(response){
-							if (response.success === false) {
-											if (response.errors){
-													$.each(this, function(key, val){
-															$('.ui.message.transition').addClass('negative').removeClass('hidden').find('h3').html(val);
-													});
-											}
-								 }
-								 else {
-												window.location.href = response.page;
-								 }
-						 }
-			});
-		}
-
-		//update doctor information
-		$('#updateForm').on('submit', function(event) {
-			event.preventDefault();
-				var user = $('[name=user]').val();
-				var id = $('[name=userID]').val();
-				var password = $('[name=userPass]').val();
-				var passconf = $('[name=userpassConf]').val();
-
-				if (user === 'doctor') {
-					doUpdate('doctorupdate', $(this).serialize());
-				} else {
-					var data = {
-								userId       : id,
-								userPass	  : password,
-								userpassConf : passconf
-							};
-					doUpdate('userupdate', data );
-				}
-				sessionStorage.setItem('message', 'Successfully updated user. You may login now');
-
-		});
-
-		//dismissable message box
-		$('.message .close').on('click', function() {
-			$(this).closest('.message').transition('fade');
-		});
-
-		//Display alert message on successful update
-		var successMsg = sessionStorage.getItem('message');
-		if (successMsg) {
-			$('.ui.message.transition').addClass('positive').removeClass('hidden').find('h3').html(successMsg);
-		}
-
-		//remove the message when page refreshes
-		function removeMessage(){
-				sessionStorage.removeItem('message');
-		}
-		window.onbeforeunload = removeMessage();
+    //insert user to the database
+    $('#user_form').on('submit', function(event){
+        event.preventDefault();
+        $.ajax({
+            url: site_url('user/createUser'),
+            data: $(this).serialize(),
+            type: 'post',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('.ui.mini.modal').modal('hide');
+                    $('.ui.message').removeClass('hidden').find('.header').text(response.message);
+                    user_table.ajax.reload();
+                } else {
+                    if (response.errors) {
+                        $.each(response.errors, function(index, val){
+                            $('[name=' + index + ']').next().html(val).parent().addClass('error');
+                        });
+                    }
+                }
+            }
+        });
+    });
+    $('#user_form').find('input').on('change', function(){
+        var index = $(this).attr('name');                   
+       if (index === 'firstname'  || index === 'lastname' || index === 'username'){
+           $(this).next().html('').parent().removeClass('error');   
+       }  
+   });
+    // $('#user_form').on('change', '[name=lastname]', function(){
+    //     var first = $('[name=firstname]').val().slice(0,4);
+    //     var last = $(this).val().slice(0,4);    
+    //     $('[name=username]').val(first + last);
+    // });
 });

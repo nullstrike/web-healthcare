@@ -5,6 +5,7 @@
       <div class="ui bottom attached segment">
             <div class="ui message transition hidden">
                 <i class="close icon"></i>
+                <div class="validation_message"></div>
             </div>
           <form class="ui form" method="post" id="updateForm" autocomplete="off">
               <input type="hidden" name="userID" value="<?php echo $this->session->userdata('userID');?>">
@@ -23,7 +24,7 @@
               </div>
                 <?php endif; ?>
               <div class="ui disabled field">
-                  <input type="text" name="userName" value="<?php echo $this->session->userdata('defaults');?>" placeholder="Username" tabindex="-1">
+                  <input type="text" name="userName" value="<?php echo $this->session->userdata('userName');?>" placeholder="Username" tabindex="-1">
               </div>
               <div class="field">
                   <input type="password" name="userPass" placeholder="Password">
@@ -36,6 +37,3 @@
       </div> <!-- end segment div -->
   </div> <!--/ main wrapper -->
 </div> <!--/ main container -->
-<script>
-alert("<?php echo $this->session->userdata('default');?>");
-</script>

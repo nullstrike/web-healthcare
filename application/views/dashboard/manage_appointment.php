@@ -1,10 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-<div class="ui padded segment boxed" id="dashboard-info"> <!--dashboard info wrapper -->
-<h5 class="ui header">Manage Appointment</h5>
-<label>This is where you can view and add appointments</label>
-</div> <!--/ dashboard info wrapper -->
-
 <div class="ui icon info message hidden ">
   <i class="info circle icon" id="message-icon"></i>
   <div class="content"></div>
@@ -34,7 +29,7 @@
 </div>
 
 
-<div class="ui mini modal" id="appointmentModal">    
+<div class="ui mini modal" id="appointmentModal">
     <div class="header">
     </div>
     <div class="content">
@@ -90,5 +85,17 @@
     <i class="remove icon"></i>
     No
   </div>
+</div>
+</div>
+<div class="ui mini modal" id="availability_modal">
+<div class="header">Disable date</div>
+
+<div class="actions">
+	<button class="ui cancel button">Cancel</button>
+	<button id="mark_disabled" class="ui icon right labeled red button">
+		<i class="delete calendar icon"></i>
+		Mark as Unavailable
+	</button>
+
 </div>
 </div>

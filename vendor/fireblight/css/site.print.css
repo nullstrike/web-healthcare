@@ -1,0 +1,124 @@
+
+#report-diagnosis, #report-prescription, #report-receipt, #consult-receipt{
+    display:none;
+}
+
+#consult-receipt {
+    padding:0;
+}
+
+.print_divider{
+    border: double black;
+    margin-left:1em;
+}
+
+.report-fields{
+    font-weight:800;
+}
+
+.report-padless-top{
+    padding-top: 0;
+}
+
+.report-padded {
+    padding-left: 2em;
+    padding-bottom: 2em;
+}
+
+.report-fill {
+    border-bottom:thin solid black;
+    margin-left:4.7em;
+    width:60%;
+}
+
+.report-body{
+    padding-top:1.2em;
+    width:100%;
+}
+
+#payment {
+  display: none;
+}
+
+#info-wrapper, #consulting-wrapper{
+    display: none ;
+    padding-bottom: 1em !important;
+    padding-right: 2rem !important;
+    margin-bottom: 0;
+}
+
+#report-prescription{
+  margin-top:0;
+  padding-top: 0;
+  width: 100%;
+}
+
+/* Css rules on reports for Page Print  */
+@media print {
+    .ui.table tr td {
+        border-top: 0px !important;
+    }
+
+    .reveal-report {
+        display: block !important;
+    }
+
+    #payment, #info-wrapper {
+      display: none !important;
+    }
+    #consult-receipt {
+        margin: 0;
+        padding: 0;
+        margin-left: 10mm;
+        display: block !important;
+    }
+    #report-diagnosis, #report-prescription, #report-receipt, #consult-receipt {
+        width: 100%;
+        margin-left: 10mm;
+    }
+
+    #header, #sidebar, #reportTable_wrapper, #choice {
+        display:none !important;
+    }
+
+    [data-name="findings"],[data-name="diagnosis"],
+    [data-name="note"], [data-name="medication"] {
+        word-break: break-all;
+    }
+    @page {
+        margin: 0;
+        size: Letter;
+    }
+
+    .ui.sub.header {
+        text-transform: capitalize;
+    }
+
+    .sheet {
+      margin: 0;
+      overflow: hidden;
+      position: absolute;
+      box-sizing: border-box;
+      page-break-after: avoid;
+
+    }
+
+    body.A5 .sheet {
+        width: 150mm;
+        height: 209mm
+    }
+
+   #report-receipt .report-header,
+   #report-prescription .report-header,
+   #report-diagnosis .report-header {
+        margin-left: 8mm;
+   }
+
+   .ui.tiny.header {
+       color: #EEEAEA
+   }
+
+   #report-prescription div:nth-child(3) b {
+        color: black;
+   }
+}

@@ -7,172 +7,365 @@ class Appointment extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('appointment_model');
-		$this->load->library('form_validation');
+		$this->load->library('sms');
     }
-    
-    public function getAppointments()
+
+   /**
+    * Function to cancel selected appointment
+    *
+    * @param int $appointment_id
+    * @return void
+    */
+    public function cancelAppointment($appointment_id)
     {
-        $query = $this->appointment_model->getAppointments();
-        $result = array();
-        foreach($query as $rows){
-            $row = array();
-            $row[] = $rows['appointment_date'];
-            $row[] = $rows['patient_name'];
-            $row[] = $rows['created_by'];
-            $row[] = '<button class="ui button mini icon">asd</button>';
-            $result[] = $row;
-        }
-        return $this->output->set_content_type('application/json')->set_output(json_encode(array('data' => $result)));
-    }
-   
-    public function cancelAppointment()
-    {
-        $id = $this->input->post('appointment_id');
-        $status = 0;
-        $query = $this->appointment_model->cancelAppointments($id, $status);
-        if ($query){
+        //mark appointment as cancelled
+        $query = $this->appointment_model->cancelAppointments($appointment_id, 0);
+
+        // verify if the query is successful
+        if ($query) {
             $response['success'] = true;
-           
         } else{
             $response['success'] = false;
-            //$response['message'] = 'Appoinment has been cancelled';
         }
-        return $this->output->set_content_type('application/json')->set_output(json_encode($response));
+      return $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
-    public function createEvent()
+
+    /**
+     * Function to create appointment
+     *
+     * @return void
+     */
+    public function createAppointment()
     {
+        //server-side form validation
             $this->form_validation->set_rules('appointment_time', 'appointment time','required');
             $this->form_validation->set_rules('appointment_date', 'appointment date', 'required');
             $this->form_validation->set_rules('patient_id', 'patient name','required',array('required' => 'You must select a patient'));
-           
+
+        //store data in an array variable to be inserted to the database
             $appointment_data = array (
                 'patient_id' => $this->input->post('patient_id'),
                 'appointment_date' => $this->input->post('appointment_date'),
                 'appointment_time' => $this->input->post('appointment_time'),
                 'userID' => $this->input->post('user_id')
             );
+
+        //check if form validation is success
             if ($this->form_validation->run()) {
-                $createAppointment = $this->appointment_model->createEvent($appointment_data);
+
+                // check if appointment exist
+                $createAppointment = $this->appointment_model->createAppointment($appointment_data);
+
+                //execute this scope if appointment do not exist
                 if ($createAppointment) {
+
+                    //set json response data
                     $response['success'] = true;
                     $response['message'] = 'Successfully appointed patient';
+
+										//sms schedule format
+										$sendOn = new DateTime($appointment_data['appointment_date'] . $appointment_data['appointment_time']);
+										$sendOn = $sendOn->sub(new DateInterval('P2D'));
+										$date = date('l, F j, Y',strtotime($appointment_data['appointment_date']));
+										$time = date('h:i a', strtotime($appointment_data['appointment_time']));
+
+										//send sms to patient and doctor
+										$this->sendToPatient($this->input->post('patient_id'),
+																				 $date,
+																				 $time,
+																				 $sendOn->format('Y-m-d H:i'));
+										$this->sendToDoctor($this->input->post('patient_id'),
+																			  $date,
+																				$time,
+																				$sendOn->format('Y-m-d H:i'));
+
+
+                    // //store data in an array variable to be inserted to pending SMS table
+                    // $sms_data = array(
+                    //     'appointment_id' => $this->db->insert_id(),
+                    //     'patient_id'     => $this->input->post('patient_id'),
+                    //     'sms_status'     => 0
+                    // );
+										//
+                    // //insert records to pending SMS  table
+                    // $this->appointment_model->createSMS($sms_data);
+
                 } else {
+                    //set json response data
                     $response['success'] = false;
                     $response['message'] = 'Appointment existed for that patient';
                 }
             } else {
+                //set json response data
                 $response['success'] = false;
                 $response['errors'] = $this->form_validation->error_array();
             }
-            return $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
-    public function updateEvent()
+
+    /**
+     * Function to update the selected appointment
+     *
+     * @param int $appointment_id
+     * @return void
+     */
+    public function updateAppointment($appointment_id)
     {
-        $id = $this->input->post('appointment_id');
-        $data = array(
+        //store data in an array variable to be inserted to the database
+        $appointment_data = array(
             'appointment_date' => $this->input->post('appointment_date'),
             'appointment_time' => $this->input->post('appointment_time')
         );
-        $query = $this->appointment_model->updateEvent($id, $data);
+
+        //store and execute appointment model updateAppointment function to a variable
+        $query = $this->appointment_model->updateAppointment($appointment_id, $appointment_data);
+
+        //check if query is successful
         if ($query) {
+            //set json response data
+            $response['message'] = 'Successfully change appointment date';
             $response['success'] = true;
         } else {
+            //set json response data
             $response['success'] = false;
         }
         return $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
-    public function fetchEvents()
+
+    /**
+     * Function to retrieve all appointments
+     *
+     * @return void
+     */
+    public function calendarAppointments()
     {
-            $query = $this->appointment_model->fetchEvents();
-            $events = array();
-            foreach($query as $rows){
-                $event = array();
-                $date = new DateTime($rows['appointment_date']);
-                $event['patient_id'] = $rows['patient_id'];
-                $event['title'] = $rows['patientName'];
-                $event['start'] = $date->format('Y-m-d');
-                $events[] = $event;
-            }
+        //store and execute appointment model calendarAppointments function to a variable
+        $query = $this->appointment_model->calendarAppointments();
+
+        //create an array variable
+        $events = array();
+
+        //iterate over query result
+        foreach($query as $rows) {
+
+            //create a temporary array variable
+            $event = array();
+
+            //store datetime object based on appointment date to a variable
+            $date = new DateTime($rows['appointment_date']);
+
+            //push data to event array
+            $event['patient_id'] = $rows['id'];
+            $event['title'] = $rows['patientName'];
+            $event['start'] = $date->format('Y-m-d');
+
+            //push the event to events array
+            $events[] = $event;
+        }
        return $this->output->set_content_type('application/json')->set_output(json_encode($events));
     }
-    public function send_sms($date, $id)
-    {
 
-    }
-
-    public function getAvailableTime()
+    /**
+     * Function to retrieve available appointment time slots
+     *
+     * @param date $appointment_date
+     * @return void
+     */
+    public function getUnavailableTime($appointment_date)
     {
-        $date = $this->input->get('appointment_date');
-        $query = $this->appointment_model->getAvailableTime($date);
-        $slot = array();
+        //store and execute appointment model getUnavailableTime function to a variable
+        $query = $this->appointment_model->getUnavailableTime($appointment_date);
+
+        //create an array variable
+        $timeslots = array();
+
+        //iterate over query result
         foreach ($query as $times){
-            $time = array();
-            $start = date('H:i',strtotime($times->appointment_time)); 
-            $end = strtotime('+30minutes', strtotime($start));
-            $end = date('H:i', $end);
-            $time[] = $start;
-            $time[] = $end;
-            $slot[] = $time;
+
+            //create a temporary array variable
+            $timeslot = array();
+
+            //store 24-hour, minutes with leading zero to a variable
+            $start = date('H:i',strtotime($times->appointment_time));
+
+            //add 30 minutes to appointment time and store to a variable
+            $end = date('H:i', strtotime('+30minutes', strtotime($start)));
+
+            //push data to timeslot array
+            $timeslot[] = $start;
+            $timeslot[] = $end;
+
+            //push the timeslot to timeslots array
+            $timeslots[] = $timeslot;
         }
-        return $this->output->set_content_type('application/json')->set_output(json_encode($slot));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($timeslots));
     }
 
-   public function getAppointmentsToday()
-   {
-       $query = $this->appointment_model->getAppointmentsToday();
-       $result = array();
-       foreach ($query as $rows){
-           $row = array();
-           $time = $rows->appointment_time;
-           $row[] = $rows->id;
-           $row[] = $rows->patient_id;
-           $row[] = $rows->patientName . " - " . date('h:i a',strtotime($time));
-           $result[] = $row;
-        }
-       return $this->output->set_content_type('application/json')->set_output(json_encode($result));
-   }
-    public function upcomingEvents()
+    /**
+     * Function to get all appointments
+     *
+     * @return void
+     */
+    public function getCurrentAppointments()
     {
-            $query = $this->appointment_model->upcomingEvents();
-            $events = array();
-            foreach($query as $rows){
-                    $row = array();
-                    $time = $rows->appointment_time;
-                    $row[] = $rows->id;
-                    $row[] = $rows->patient_id;
-                    $row[] = $rows->patientName;
-                    $row[] = $rows->appointment_date;
-                    $row[] = date('h:ia', strtotime($time));
-                    $row[] = $rows->created_by;
-                    $row[] = '<button class="ui icon mini orange button update"><i class="repeat icon"></i>Reschedule</button>&nbsp;<button class="ui icon mini red button remove"><i class="delete calendar icon"></i>Cancel Appointment</button>';
+        //store and execute appointment model getAppointments function to a variable
+        $query = $this->appointment_model->getCurrentAppointments();
 
-                    $events[] = $row;
+        //create an array variable
+        $appointments = array();
+
+        //iterate over query result
+        foreach ($query as $rows) {
+
+            //create a temporary array variable
+            $appointment = array();
+
+            //push data to appointment array
+            $appointment[] = $rows->id;
+            $appointment[] = $rows->patient_id;
+            $appointment[] = $rows->patientName . " - " . date('h:i a',strtotime($rows->appointment_time));
+
+            //push appointment to appointments array
+            $appointments[] = $appointment;
+        }
+       return $this->output->set_content_type('application/json')->set_output(json_encode($appointments));
+    }
+
+   /**
+    * Function to retrieve 2 days before appointments
+    *
+    * @return void
+    */
+    public function getAllAppointments()
+    {
+        //store and execute appointment model upcomingAppointments function to a variable
+        $query = $this->appointment_model->getAllAppointments();
+
+        //create an array variable
+        $appointments = array();
+
+        //iterate over query result
+            foreach($query as $rows) {
+
+                //create a temporary variable
+                $appointment = array();
+
+                //push data to appointment array
+                $appointment[] = $rows->id;
+                $appointment[] = $rows->patient_id;
+                $appointment[] = $rows->patientName;
+                $appointment[] = $rows->appointment_date;
+                $appointment[] = date('h:i a', strtotime($rows->appointment_time));
+                $appointment[] = $rows->created_by;
+
+
+                //push appointment to appointments array
+                $appointments[] = $appointment;
             }
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('data' => $events)));
-    }
-    public function disabledDate()
-    {
-        $data = array(
-                'na_date' => $this->input->post('na_date')
-            );
-        $this->appointment_model->disabledDate($data);
-        return;        
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('data' => $appointments)));
     }
 
-    public function fetchdisabledDates()
+    /**
+     * Function to disable dates in the date picker
+     *
+     * @param date $date
+     * @return void
+     */
+    public function disabledDate($date, $user)
     {
-       $query = $this->appointment_model->fetchdisabledDates();
-       $dates = array();
-       foreach ($query as $result){
-           $date = array();
-           $date['start'] = $result->na_date;
-           $date['title'] = 'Unavailable';
-           $dates[] = $date;
+        //call disabledDate function from appointment model
+        $this->appointment_model->disabledDate($date, $user);
+    }
+
+    /**
+     * Function to get disabled dates for fullcalendar
+     *
+     * @return void
+     */
+    public function getDisabledDates()
+    {
+       //store and execute appointment model getDisabledDates function to a variable
+       $query = $this->appointment_model->getDisabledDates();
+
+       //create an array variable
+       $appointment_dates = array();
+
+       //iterate over query result
+       foreach ($query as $result) {
+
+           //create a temporary variable
+           $appointment_date = array();
+
+           //push data to appointment_date array
+           $appointment_date['start'] = $result->na_date;
+           $appointment_date['title'] = 'Unavailable';
+
+           //push appointment_date to appointment_dates array
+           $appointment_dates[] = $appointment_date;
         }
-        return $this->output->set_content_type('application/json')->set_output(json_encode($dates));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($appointment_dates));
     }
 
-    
+    public function upcomingAppointments()
+    {
+        $query = $this->appointment_model->upcomingAppointments();
+        $appointments = array();
+
+        foreach ($query as $row) {
+            $appointment = array();
+            $appointment['schedule'] = date('F d, Y',strtotime($row->appointment_date)) . ' - ' .  date('H:i a', strtotime($row->appointment_time));
+            $appointment['patient']  = $row->patientName;
+            $appointments[] = $appointment;
+        }
+        return $this->output->set_content_type('application/json')->set_output(json_encode($appointments));
+    }
+		public function sms_notify()
+		{
+			$phone = $this->input->post('phone');
+		}
+		public function send_sms()
+		{
+			$phone = $this->input->post('phones');
+			$message = $this->input->post('message');
+			$dat = new DateTime();
+
+			$dat = $dat->format('Y-m-d') . " " . date('H:i', strtotime('01:13'));
+			$result = $this->sms->sendSMS($phone,$message, $dat);
+		  $raw = strstr($result, 'MessageID=');
+		  $tx = array_count_values(str_word_count($raw, 1));
+		  echo json_encode($tx['MessageID']);
+		}
+	public function sendToDoctor($patient_id, $date, $time, $sendDate)
+	{
+		$doctor_id = $this->appointment_model->docId();
+		$doctor = $this->appointment_model->sendCC($doctor_id[0]->id);
+		$patient = $this->appointment_model->sendTo($patient_id);
+		$patientName = ($patient[0]->gender === 'Male') ? 'Mr. ' : 'Ms. ';
+		$patientName .= $patient[0]->lastname;
+		$name = 'Dr. ' . $doctor[0]->lastname;
+		$msg = "Good Day " . $name . ",\n\n";
+		$msg .= "Please be reminded that you have an upcoming appointment to $patientName ";
+		$msg .= "this $date at $time.\n\nThank You. \n\n\n";
+		$msg .= "Note: This is a system-generated message. Please do not reply";
+		$tx = $this->sms->sendSMS($doctor[0]->contact, $msg, $sendDate);
+
+	}
+	public function sendToPatient($patient_id, $date, $time, $sendDate)
+		{
+			 $patient = $this->appointment_model->sendTo($patient_id);
+			 $gender = ($patient[0]->gender === 'Male') ? 'Mr. ' : 'Ms. ';
+			 $sms = array(
+				 "patient_contact" => $patient[0]->contact,
+				 "patient_lastname" => $gender . $patient[0]->lastname,
+
+			 );
+			 $msg = "Good Day " . $gender . $patient[0]->lastname . ",\n\n";
+			 $msg .= "This is from Aguilar Clinic. Please be reminded of your upcoming appointment ";
+			 $msg .= "this $date at $time .\n\nThank You. \n\n\n";
+			 $msg .= "Note: This is a system-generated message. Please do not reply";
+			 $t = $this->sms->sendSMS($patient[0]->contact, $msg, $sendDate);
+			 return $t;
+		}
 
 
 

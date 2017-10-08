@@ -1,8 +1,4 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<div class="ui padded segment boxed" id="dashboard-info"> <!--dashboard info wrapper -->
-      <h5 class="ui header">Manage Patient</h5>
-      <label>This is where you can manage patient like updating and adding patient information.</label>
-</div> <!--/ dashboard info wrapper -->
 
 <!-- alert message -->
 <div class="ui icon positive message hidden">
@@ -15,11 +11,19 @@
   <table id="patient_table" class="ui selectable very small compact celled table" cellspacing="0" width="100%">
       <thead>
         <tr>
+
           <th>ID</th>
           <th>First Name</th>
           <th>Middle Name</th>
           <th>Last Name</th>
-          <th>Actions</th>
+          <th>Gender</th>
+          <th>Birthdate</th>
+          <th>Age</th>
+          <th>BloodType</th>
+          <th>Address</th>
+          <th>Contact Number</th>
+          <th>Action</th>
+          <th></th>
         </tr>
       </thead>
   </table>
@@ -48,9 +52,9 @@
           </div>
        </div>
        <div class="fields">
-          <div class="six wide field">
+          <div class="five wide field">
                 <label>Gender</label>
-                <select name="gender" class="ui dropdown" data-title="asd">
+                <select name="gender" class="ui selection dropdown" data-title="asd">
                   <option value="">Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -61,17 +65,54 @@
                 <label>Birthdate</label>
                 <div class="ui input left icon">
                   <i class="calendar icon"></i>
-                  <input type="date" name="birthdate" placeholder="Enter your birthdate">
-                </div> 
-                <span class="error text"></span>         
+                  <input type="text" id="birthdate" name="birthdate" placeholder="Enter your birthdate">
+                </div>
+                <span class="error text"></span>
           </div>
-          <div class="four wide field">
+          <div class="two wide field">
               <label>Age</label>
               <input type="text" name="age" readonly>
           </div>
+          <div class="five wide field">
+                <label>Blood Type</label>
+                <select name="bloodtype" class="ui selection dropdown">
+                    <option selected value="Unspecified">--Unspecified--</option>
+                    <option value="A-">Blood Type A - Negative</option>
+                    <option value="A+">Blood Type A - Positive</option>
+                    <option value="B-">Blood Type B - Negative</option>
+                    <option value="B+">Blood Type B - Positive</option>
+                    <option value="AB-">Blood Type AB-Negative </option>
+                    <option value="AB+">Blood Type AB - Positive</option>
+                    <option value="O-">Blood Type O - Negative</option>
+                    <option value="O+">Blood Type O - Positive </option>
+
+                </select>
+                <span class="error text"></span>
+          </div>
        </div>
       <div class="fields">
-          <div class="six wide field">
+          <div class="nine wide field">
+                <label>Address</label>
+                <input type="text" name="address" placeholder="Enter address...">
+                <span class="error text"></span>
+          </div>
+
+          <div class="seven wide field">
+                <label>Contact Number</label>
+                <input type="text"  name="contact" placeholder="Enter contact number...">
+                <span class="error text"></span>
+          </div>
+      </div>
+      </form>
+    </div>
+    <div class="actions">
+          <button class="ui button blue" id="btnAction" data-content="rtes"  type="submit"></button>
+    </div>
+
+</div>
+
+
+<!-- <div class="six wide field">
                 <label>Weight</label>
                 <div class="ui right labeled input">
                    <input type="text" name="weight" placeholder="Enter weight">
@@ -84,43 +125,7 @@
                 <div class="ui right labeled input">
                    <input type="text" name="height" placeholder="Enter height">
                    <div class="ui basic label">cm</div>
- 
+
                 </div>
                 <span class="error text"></span>
-          </div>
-          <div class="five wide field">
-                <label>Blood Type</label>
-                <select name="bloodtype" class="ui dropdown">
-                    <option value="">Select the blood type</option>
-                    <option value="A-">Blood Type A - Negative</option>
-                    <option value="A+">Blood Type A - Positive</option>
-                    <option value="B-">Blood Type B - Negative</option>
-                    <option value="B+">Blood Type B - Positive</option>
-                    <option value="AB-">Blood Type AB - Negative </option>
-                    <option value="AB+">Blood Type AB - Positive</option>
-                    <option value="O-">Blood Type O - Negative</option>
-                    <option value="O+">Blood Type O - Positive </option>
-                </select>
-                <span class="error text"></span>
-          </div>  
-      </div>
-      <div class="fields">
-          <div class="nine wide field">
-                <label>Address</label>
-                <input type="text" name="address" placeholder="Enter address...">
-                <span class="error text"></span>
-          </div>
-
-          <div class="seven wide field">
-                <label>Contact Number</label>
-                <input type="text" name="contact" placeholder="Enter contact number...">
-                <span class="error text"></span>
-          </div>
-      </div>
-      </form>
-    </div>
-    <div class="actions">
-          <button class="ui button blue" id="btnAction" data-content="rtes"  type="submit"></button>
-    </div>
-
-</div>
+          </div> -->

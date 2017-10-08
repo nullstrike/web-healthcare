@@ -44,7 +44,10 @@
          min-height:100%;
          -webkit-font-smoothing: subpixel-antialiased;
      }
-
+     
+     .border-button {
+      width:350px;
+     }
      .clearfix {
          clear:both;
          zoom: 1;
@@ -58,8 +61,7 @@
      .clearfix:after {
          clear: both;
      }
-    </style>
-    <style>
+
  .sign.error-page-wrapper {
     font-family: 'Source Sans Pro', sans-serif;
     background-color: #179eca;
@@ -339,3 +341,5 @@
     .shadow {
       box-shadow: 0 0 60px #000000;
     }
+
+    

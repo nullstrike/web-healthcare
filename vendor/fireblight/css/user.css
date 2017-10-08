@@ -38,3 +38,11 @@ body{
 .ui.message>.close.icon {
   top: 0.1575em;
 }
+span {
+  display: block;
+}
+
+.pull-left {
+  float:left;
+  padding-bottom:1em;
+}
